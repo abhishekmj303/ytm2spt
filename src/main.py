@@ -101,7 +101,7 @@ def get_args():
         action="store_true",
         required=False,
         default=False,
-        help="Create a new playlist",
+        help="Force create a new playlist",
     )
     run_group.add_argument(
         "-d",
@@ -159,7 +159,9 @@ if __name__ == "__main__":
 
     songs = yt.get_songs_from_playlist(limit)
     ytm2spt_logger.info(f"Got {len(songs)} songs from Youtube Playlist")
+    
     total_songs_added = 0
+    total_songs_found = 0
 
     for song in songs:
         song_uri = sp.get_song_uri(song.artist, song.title)
@@ -167,6 +169,8 @@ if __name__ == "__main__":
         if not song_uri:
             ytm2spt_logger.error(f"{song.artist} - {song.title} was not found!")
             continue
+        else:
+            total_songs_found += 1
         
         if dryrun:
             continue
@@ -179,6 +183,6 @@ if __name__ == "__main__":
             total_songs_added += 1
     
     if not dryrun:
-        
-
         ytm2spt_logger.info(f'Added {total_songs_added} songs out of {len(songs)}')
+    else:
+        ytm2spt_logger.info(f'Found {total_songs_found} songs out of {len(songs)}')

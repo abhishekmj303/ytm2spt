@@ -2,6 +2,6 @@
 __pycache__
 .env
 .vscode/**
-.venv/**
+.venv*
 *test*
 thumbnail.jpg
