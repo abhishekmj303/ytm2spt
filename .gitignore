@@ -1,0 +1,7 @@
+.cache*
+__pycache__
+.env
+.vscode/**
+.venv/**
+*test*
+thumbnail.jpg
