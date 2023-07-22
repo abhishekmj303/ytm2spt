@@ -29,7 +29,7 @@ Converts a youtube music playlist to spotify playlist.
 
 ### Setting Environment Variables (Windows)
 
-```ps
+```sh
 set SPOTIFY_USER_ID <your_user_id>
 set SPOTIFY_CLIENT_ID <your_client_id>
 set SPOTIFY_CLIENT_SECRET <your_client_secret>
@@ -43,7 +43,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-```ps
+```sh
 $ source .env
 $ python src/main.py -h
 usage: main.py [-h] -yt YOUTUBE_URL_OR_ID
@@ -66,7 +66,7 @@ options:
 
 ### Examples
 
-```ps
+```sh
 # Pass any link containing a youtube playlist ID
 # Sets same name as youtube playlist
 $ python src/main.py -yt "https://music.youtube.com/playlist?list=RDCLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU"
