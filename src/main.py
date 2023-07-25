@@ -157,6 +157,9 @@ if __name__ == "__main__":
             sp.set_playlist_description()
             ytm2spt_logger.info("Update playlist description")
 
+            sp.empty_playlist()
+            ytm2spt_logger.info("Empty the current playlist")
+
     songs = yt.get_songs_from_playlist(limit)
     ytm2spt_logger.info(f"Got {len(songs)} songs from Youtube Playlist")
     
