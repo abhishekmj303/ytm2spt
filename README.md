@@ -66,6 +66,8 @@ options:
 
 ### Examples
 
+Sample Playlist: Pop Certified ([YouTube Music](https://music.youtube.com/playlist?list=RDCLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU) to [Spotify](https://open.spotify.com/playlist/6DyIxXHMwuEMbsfPTIr9C8))
+
 ```sh
 # Pass any link containing a youtube playlist ID
 # Sets same name as youtube playlist
@@ -78,7 +80,7 @@ $ python src/main.py -yt "CLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -spname "Po
 # Pass an existing spotify playlist URL or ID
 # Limit the number of songs to fetch
 # Dry run mode
-$ python src/main.py -yt "CLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -sp "https://open.spotify.com/playlist/6DyIxXHMwuEMbsfPTIr9C8?si=088e0b2f3a0446b6" -l 10 -d
+$ python src/main.py -yt "CLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -sp "https://open.spotify.com/playlist/6DyIxXHMwuEMbsfPTIr9C8" -l 10 -d
 
 # Pass even the URL of video playing from playlist
 # Force create a new playlist
