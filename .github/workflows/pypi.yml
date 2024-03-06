@@ -1,6 +1,9 @@
 name: Publish to PyPI
 
 on:
+  push:
+    branches:
+      - "pypi-test"
   release:
     types: [published]
 
