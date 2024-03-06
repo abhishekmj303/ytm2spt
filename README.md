@@ -45,8 +45,8 @@ pip install -r requirements.txt
 
 ```sh
 $ source .env
-$ python src/main.py -h
-usage: main.py [-h] -yt YOUTUBE_URL_OR_ID
+$ python src/ytm2spt.py -h
+usage: ytm2spt.py [-h] -yt YOUTUBE_URL_OR_ID
                [-sp SPOTIFY_URL_OR_ID | -spname SPOTIFY_PLAYLIST_NAME]
                [-n | -d] [-l LIMIT]
 
@@ -71,20 +71,20 @@ Sample Playlist: Pop Certified ([YouTube Music](https://music.youtube.com/playli
 ```sh
 # Pass any link containing a youtube playlist ID
 # Sets same name as youtube playlist
-$ python src/main.py -yt "https://music.youtube.com/playlist?list=RDCLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU"
+$ python src/ytm2spt.py -yt "https://music.youtube.com/playlist?list=RDCLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU"
 
 # Pass just the youtube playlist ID
 # Set a custom name for the playlist
-$ python src/main.py -yt "CLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -spname "Pop Certified"
+$ python src/ytm2spt.py -yt "CLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -spname "Pop Certified"
 
 # Pass an existing spotify playlist URL or ID
 # Limit the number of songs to fetch
 # Dry run mode
-$ python src/main.py -yt "CLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -sp "https://open.spotify.com/playlist/6DyIxXHMwuEMbsfPTIr9C8" -l 10 -d
+$ python src/ytm2spt.py -yt "CLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -sp "https://open.spotify.com/playlist/6DyIxXHMwuEMbsfPTIr9C8" -l 10 -d
 
 # Pass even the URL of video playing from playlist
 # Force create a new playlist
-$ python src/main.py -yt "https://www.youtube.com/watch?v=RlPNh_PBZb4&list=RDCLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -n
+$ python src/ytm2spt.py -yt "https://www.youtube.com/watch?v=RlPNh_PBZb4&list=RDCLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -n
 ```
 
 **Note**

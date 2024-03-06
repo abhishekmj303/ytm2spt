@@ -131,7 +131,7 @@ def get_args():
     return youtube, spotify, spotify_playlist_name, dryrun, create_new, limit
 
 
-if __name__ == "__main__":
+def main():
     youtube_arg, spotify_arg, spotify_playlist_name, dryrun, create_new, limit = get_args()
     yt = YoutubeMusic()
     sp = Spotify()
@@ -189,3 +189,7 @@ if __name__ == "__main__":
         ytm2spt_logger.info(f'Added {total_songs_added} songs out of {len(songs)}')
     else:
         ytm2spt_logger.info(f'Found {total_songs_found} songs out of {len(songs)}')
+
+
+if __name__ == "__main__":
+    main()
