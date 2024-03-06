@@ -87,5 +87,9 @@ $ python src/main.py -yt "CLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -sp "https:
 $ python src/main.py -yt "https://www.youtube.com/watch?v=RlPNh_PBZb4&list=RDCLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -n
 ```
 
-**Note**
+> [!TIP]<br>
+> If you find this project useful or interesting, please consider giving it a 🌟star! It helps others discover it too!
+
+
+> [!NOTE]<br>
 > Forked from @edgarh22's [Youtube-to-Spotify-Archiver](https://github.com/edgarh92/Youtube-to-Spotify-Archiver).
