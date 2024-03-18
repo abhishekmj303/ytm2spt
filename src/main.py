@@ -70,14 +70,6 @@ def get_args():
         required=True,
         help="Youtube Playlist URL or ID",
     )
-    # parser.add_argument(
-    #     "-o",
-    #     "--output",
-    #     type=str,
-    #     default="~/Music/JSON",
-    #     required=False,
-    #     help="Destination location of JSON files",
-    # )
     sp_group = parser.add_mutually_exclusive_group(required=False)
     sp_group.add_argument(
         "-sp",
@@ -93,6 +85,14 @@ def get_args():
         default=None,
         help="Spotify Playlist Name \
             (Default: Youtube Playlist Name)",
+    )
+    parser.add_argument(
+        "-ytauth",
+        "--youtube-oauth-json",
+        type=str,
+        default=None,
+        required=False,
+        help="Youtube OAuth JSON filepath (run 'ytmusicapi oauth')"
     )
     run_group = parser.add_mutually_exclusive_group(required=False)
     run_group.add_argument(
@@ -122,18 +122,19 @@ def get_args():
 
     args = parser.parse_args()
     youtube = args.youtube_url_or_id
+    youtube_oauth = args.youtube_oauth_json
     spotify = args.spotify_url_or_id
     spotify_playlist_name = args.spotify_playlist_name
     dryrun = args.dryrun
     create_new = args.create_new
     limit = args.limit
 
-    return youtube, spotify, spotify_playlist_name, dryrun, create_new, limit
+    return youtube, spotify, spotify_playlist_name, youtube_oauth, dryrun, create_new, limit
 
 
 if __name__ == "__main__":
-    youtube_arg, spotify_arg, spotify_playlist_name, dryrun, create_new, limit = get_args()
-    yt = YoutubeMusic()
+    youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dryrun, create_new, limit = get_args()
+    yt = YoutubeMusic(youtube_oauth)
     sp = Spotify()
     ytm2spt_logger = setup_logger(__name__)
 

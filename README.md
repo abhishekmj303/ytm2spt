@@ -3,7 +3,7 @@
 Converts a youtube music playlist to spotify playlist.
 
 - [x] Support public playlists
-- [ ] Support private playlists
+- [x] Support private playlists
 - [x] Auto create or update playlist if it already exists
 - [x] Use fuzzy search to find the best match
 - [x] Copy playlist thumbnail from youtube to spotify
@@ -18,7 +18,10 @@ Converts a youtube music playlist to spotify playlist.
 
 1. Create a new app: https://developer.spotify.com/dashboard
 2. Set "Redirect URI" to `http://localhost:8888/callback`
+   ![Spotify create new app](media/spotify_create_app.png)
 3. Copy the "Client ID" and "Client Secret" to use later
+   ![Spotify settings](media/spotify_settings.png)
+   ![Spotify credentials](media/spotify_credentials.png)
 
 ### Setting Environment Variables Linux and Mac
 
@@ -41,6 +44,13 @@ set SPOTIFY_REDIRECT_URI 'http://localhost:8888/callback'
 pip install -r requirements.txt
 ```
 
+### Youtube OAuth (Only for private playlists)
+
+Run the following command to login to your Youtube account and save the credentials to `oauth.json`
+```sh
+ytmusicapi oauth
+```
+
 ## Usage
 
 ```sh
@@ -48,6 +58,7 @@ $ source .env
 $ python src/main.py -h
 usage: main.py [-h] -yt YOUTUBE_URL_OR_ID
                [-sp SPOTIFY_URL_OR_ID | -spname SPOTIFY_PLAYLIST_NAME]
+               [-ytauth YOUTUBE_OAUTH_JSON]
                [-n | -d] [-l LIMIT]
 
 options:
@@ -58,6 +69,8 @@ options:
                         Spotify Playlist URL or ID
   -spname SPOTIFY_PLAYLIST_NAME, --spotify-playlist-name SPOTIFY_PLAYLIST_NAME
                         Spotify Playlist Name (Default: Youtube Playlist Name)
+  -ytauth YOUTUBE_OAUTH_JSON, --youtube-oauth-json YOUTUBE_OAUTH_JSON
+                        Youtube OAuth JSON filepath (run 'ytmusicapi oauth')
   -n, --create-new      Force create a new playlist
   -d, --dryrun          Do not add to Spotify
   -l LIMIT, --limit LIMIT
@@ -76,6 +89,10 @@ $ python src/main.py -yt "https://music.youtube.com/playlist?list=RDCLAK5uy_lBNU
 # Pass just the youtube playlist ID
 # Set a custom name for the playlist
 $ python src/main.py -yt "CLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -spname "Pop Certified"
+
+# Pass link of a private youtube playlist
+# Provide the path to the oauth.json file
+$ python src/main.py -yt "https://music.youtube.com/playlist?list=PLz96m0PSfi9p8ABcEcUlSMVmz7sN-IEFu" -ytauth "oauth.json"
 
 # Pass an existing spotify playlist URL or ID
 # Limit the number of songs to fetch

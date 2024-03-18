@@ -22,12 +22,12 @@ def clean_song_info(song: Song) -> Song:
 
 
 class YoutubeMusic:
-    def __init__(self):
+    def __init__(self, oauth_json: str = None):
         self.playlist_id = ""
         self.playlist = {}
         self.songs = []
         self.yt_logger = setup_logger(__name__)
-        self.ytmusic = YTMusic()
+        self.ytmusic = YTMusic(oauth_json)
 
     def __fetch_playlist(self) -> dict:
         result = self.ytmusic.get_playlist(self.playlist_id, limit=None)
