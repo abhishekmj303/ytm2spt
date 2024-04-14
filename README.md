@@ -27,17 +27,19 @@ Converts a youtube music playlist to spotify playlist.
 
 1. Rename the file `.env.sample` to `.env`
 2. Edit the file by adding your credentials
-3. Run the following command to set your environment variable `source .env`
+3. Run the following command to set your environment variable: `source .env`
 
 
 ### Setting Environment Variables (Windows)
 
-```sh
-set SPOTIFY_USER_ID <your_user_id>
-set SPOTIFY_CLIENT_ID <your_client_id>
-set SPOTIFY_CLIENT_SECRET <your_client_secret>
-set SPOTIFY_REDIRECT_URI 'http://localhost:8888/callback'
+1. Edit `env.bat` file by adding your credentials
+```bat
+setx SPOTIFY_USER_ID <your_user_id>
+setx SPOTIFY_CLIENT_ID <your_client_id>
+setx SPOTIFY_CLIENT_SECRET <your_client_secret>
+setx SPOTIFY_REDIRECT_URI "http://localhost:8888/callback"
 ```
+2. Run the batch file to set your environment variable: `env.bat`
 
 ### Install Dependencies
 ```sh
