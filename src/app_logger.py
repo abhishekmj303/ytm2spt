@@ -1,4 +1,5 @@
 import logging
+import tempfile
 
 
 def setup_logger(name: str):
@@ -9,7 +10,10 @@ def setup_logger(name: str):
         )
     stdout_formating = logging.Formatter('%(levelname)s - %(message)s')
 
-    file_handler = logging.FileHandler(f"/tmp/{name}.log")
+    with tempfile.NamedTemporaryFile(prefix=name, suffix=".log", delete=False) as f:
+        file_name = f.name
+
+    file_handler = logging.FileHandler(file_name, encoding='utf-8')
     file_handler.setFormatter(stdout_formating)
     file_handler.setLevel(logging.DEBUG)
 
