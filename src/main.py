@@ -151,8 +151,12 @@ if __name__ == "__main__":
         sp.set_playlist_id(spotify_id)
         ytm2spt_logger.info(f"Spotify Playlist Name: {sp.get_playlist_name()}")
 
-        set_yt_thumbnail_as_sp_cover()
-        ytm2spt_logger.info("Set playlist cover from youtube thumbnail")
+        try:
+            set_yt_thumbnail_as_sp_cover()
+            ytm2spt_logger.info("Set playlist cover from youtube thumbnail")
+        except Exception as e:
+            ytm2spt_logger.warning(str(e))
+            ytm2spt_logger.warning("Could not able to set playlist cover from youtube thumbnail")
 
         if not create_new:
             sp.set_playlist_description()
