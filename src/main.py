@@ -170,12 +170,14 @@ if __name__ == "__main__":
     
     total_songs_added = 0
     total_songs_found = 0
+    songs_not_found = []
 
-    for song in songs:
+    for i, song in enumerate(songs, start=1):
         song_uri = sp.get_song_uri(song.artist, song.title)
 
         if not song_uri:
             ytm2spt_logger.error(f"{song.artist} - {song.title} was not found!")
+            songs_not_found.append(f"{i}. {song.artist} - {song.title}")
             continue
         else:
             total_songs_found += 1
@@ -194,3 +196,6 @@ if __name__ == "__main__":
         ytm2spt_logger.info(f'Added {total_songs_added} songs out of {len(songs)}')
     else:
         ytm2spt_logger.info(f'Found {total_songs_found} songs out of {len(songs)}')
+    
+    if songs_not_found:
+        ytm2spt_logger.warning(f"Songs not found:\n", "\n".join(songs_not_found))
