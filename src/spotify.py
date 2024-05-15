@@ -7,6 +7,17 @@ from utils import fuzzy_match_artist, artist_names_from_tracks
 from typing import Literal, Any
 from datetime import datetime
 
+# Fixes the issue of requests not timing out in Python versions < 3.11
+DEFAULT_TIMEOUT = 10
+old_send = requests.Session.send
+
+def new_send(*args, **kwargs):
+    if kwargs.get("timeout", None) is None:
+        kwargs["timeout"] = DEFAULT_TIMEOUT
+    return old_send(*args, **kwargs)
+
+requests.Session.send = new_send
+
 
 def generate_description() -> str:
     isodate = datetime.now().strftime("%b %d, %Y") # example: Jun 30, 2021
