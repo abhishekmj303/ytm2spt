@@ -22,6 +22,8 @@ Converts a youtube music playlist to spotify playlist.
 3. Copy the "Client ID" and "Client Secret" to use later
    ![Spotify settings](media/spotify_settings.png)
    ![Spotify credentials](media/spotify_credentials.png)
+4. Copy the "User ID" from your Spotify account: https://www.spotify.com/in-en/account/profile/
+   ![Spotify username](media/spotify_username.png)
 
 ### Setting Environment Variables Linux and Mac
 
