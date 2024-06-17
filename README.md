@@ -35,15 +35,15 @@ Converts a youtube music playlist to spotify playlist.
 ### Setting Environment Variables (Windows)
 
 1. Edit `env.bat` file by adding your credentials in these lines
-```bat
-set SPOTIFY_USER_ID=<your_user_id>
-set SPOTIFY_CLIENT_ID=<your_client_id>
-set SPOTIFY_CLIENT_SECRET=<your_client_secret>
-```
+   ```bat
+   set SPOTIFY_USER_ID=<your_user_id>
+   set SPOTIFY_CLIENT_ID=<your_client_id>
+   set SPOTIFY_CLIENT_SECRET=<your_client_secret>
+   ```
 2. Run the batch file to set your environment variable: 
-```bat
-env.bat
-```
+   ```bat
+   env.bat
+   ```
 
 >[!NOTE]<br>
 > If the environment variables are not set, you may need to restart your terminal or IDE.
