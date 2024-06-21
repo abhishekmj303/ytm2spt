@@ -4,7 +4,7 @@ import os
 from app_logger import setup_logger
 from urllib.parse import quote
 from utils import fuzzy_match_artist, artist_names_from_tracks
-from typing import Literal, Any
+from typing import Literal, Any, Union
 from datetime import datetime
 
 # Fixes the issue of requests not timing out in Python versions < 3.11
@@ -226,7 +226,7 @@ class Spotify:
         self.spotify_logger.debug(f"Set Playlist Cover: {response.status_code}")
         return response.ok
 
-    def _num_playlist_songs(self, playlist_id: str = "") -> Any | Literal[False] | None:
+    def _num_playlist_songs(self, playlist_id: str = "") -> Union[Any, Literal[False], None]:
         if not playlist_id:
             playlist_id = self.playlist_id
         url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
