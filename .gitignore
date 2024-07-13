@@ -7,4 +7,4 @@ __pycache__
 thumbnail.jpg
 *.log
 *.sh
-*.json
+oauth.json
