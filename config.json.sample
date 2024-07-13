@@ -1,0 +1,6 @@
+{
+  "SPOTIFY_USER_ID": null,
+  "SPOTIFY_CLIENT_ID": null,
+  "SPOTIFY_CLIENT_SECRET": null,
+  "SPOTIFY_REDIRECT_URI": "http://localhost:8888/callback"
+}

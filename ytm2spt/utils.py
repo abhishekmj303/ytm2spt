@@ -1,5 +1,5 @@
 from thefuzz import process, fuzz
-from app_logger import setup_logger
+from .app_logger import setup_logger
 
 
 utils_logger = setup_logger(__name__)

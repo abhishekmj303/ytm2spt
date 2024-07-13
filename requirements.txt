@@ -3,3 +3,4 @@ requests
 spotipy
 thefuzz
 ytmusicapi
+PySide6

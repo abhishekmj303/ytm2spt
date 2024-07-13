@@ -8,3 +8,10 @@ thumbnail.jpg
 *.log
 *.sh
 oauth.json
+
+# Build files
+*.build
+*.dist
+*.onefile-build
+*.bin
+*.exe

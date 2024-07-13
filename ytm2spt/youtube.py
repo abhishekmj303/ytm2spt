@@ -1,7 +1,7 @@
 from ytmusicapi import YTMusic
 from dataclasses import dataclass
 import re
-from app_logger import setup_logger
+from .app_logger import setup_logger
 
 @dataclass
 class Song:
@@ -11,13 +11,13 @@ class Song:
 
 def clean_song_info(song: Song) -> Song:
     artist, title = song.artist, song.title
-    title = re.sub('\(.*', '', title)          # Remove everything after '(' including '('
-    title = re.sub('ft.*', '', title)          # Remove everything after 'ft' including 'ft'
-    title = re.sub(',.*', '', title)           # Remove everything after ',' including ','
-    artist = re.sub('\sx\s.*', '', artist)     # Remove everything after ' x ' including ' x '
-    artist = re.sub('\(.*', '', artist)        # Remove everything after '(' including '('
-    artist = re.sub('ft.*', '', artist)        # Remove everything after 'ft' including 'ft'
-    artist = re.sub(',.*', '', artist)         # Remove everything after ',' including ','
+    title = re.sub(r'\(.*', '', title)          # Remove everything after '(' including '('
+    title = re.sub(r'ft.*', '', title)          # Remove everything after 'ft' including 'ft'
+    title = re.sub(r',.*', '', title)           # Remove everything after ',' including ','
+    artist = re.sub(r'\sx\s.*', '', artist)     # Remove everything after ' x ' including ' x '
+    artist = re.sub(r'\(.*', '', artist)        # Remove everything after '(' including '('
+    artist = re.sub(r'ft.*', '', artist)        # Remove everything after 'ft' including 'ft'
+    artist = re.sub(r',.*', '', artist)         # Remove everything after ',' including ','
     return Song(artist.strip(), title.strip())  # Remove whitespaces from start and end
 
 
