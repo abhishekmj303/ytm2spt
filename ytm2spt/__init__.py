@@ -31,7 +31,7 @@ def get_youtube_playlist_id(youtube_arg: str) -> str:
     return youtube_arg
 
 
-def get_spotify_playlist_id(spotify_arg: str, spotify_playlist_name: str) -> str:
+def get_spotify_playlist_id(spotify_arg: str, spotify_playlist_name: str, create_new: bool, dryrun: bool) -> str:
     if spotify_arg:
         for site in ["spotify.com", "spotify:"]:
             if site in spotify_arg:
@@ -146,7 +146,7 @@ def main(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dryrun,
     if dryrun:
         ytm2spt_logger.info("Dryrun mode enabled. No songs will be added to Spotify.")
     else:
-        spotify_id = get_spotify_playlist_id(spotify_arg, spotify_playlist_name)
+        spotify_id = get_spotify_playlist_id(spotify_arg, spotify_playlist_name, create_new, dryrun)
         ytm2spt_logger.info(f"Spotify Playlist ID: {spotify_id}")
         sp.set_playlist_id(spotify_id)
         ytm2spt_logger.info(f"Spotify Playlist Name: {sp.get_playlist_name()}")
@@ -202,5 +202,4 @@ def main(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dryrun,
 
 
 if __name__ == "__main__":
-    youtube, spotify, spotify_playlist_name, youtube_oauth, dryrun, create_new, limit = get_args()
-    main(youtube, spotify, spotify_playlist_name, youtube_oauth, dryrun, create_new, limit)
+    main(get_args())
