@@ -13,6 +13,7 @@
 
 import os
 import sys
+import traceback
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget\
     , QLabel, QLineEdit, QCheckBox, QSpinBox, QTextEdit, QPushButton\
     , QVBoxLayout, QFormLayout, QHBoxLayout, QDialog, QButtonGroup\
@@ -304,14 +305,16 @@ class MainWindow(QMainWindow):
         create_new = self.create_new_checkbox.isChecked()
         limit = self.limit_input.value() if self.limit_input.value() > 0 else None
 
-        os.environ["SPOTIPY_USER_ID"] = SETTINGS.value("SPOTIFY_USER_ID")
-        os.environ["SPOTIPY_CLIENT_ID"] = SETTINGS.value("SPOTIFY_CLIENT_ID")
-        os.environ["SPOTIPY_CLIENT_SECRET"] = SETTINGS.value("SPOTIFY_CLIENT_SECRET")
-        os.environ["SPOTIPY_REDIRECT_URI"] = SETTINGS.value("SPOTIFY_REDIRECT_URI")
+        os.environ["SPOTIFY_USER_ID"] = SETTINGS.value("SPOTIFY_USER_ID")
+        os.environ["SPOTIFY_CLIENT_ID"] = SETTINGS.value("SPOTIFY_CLIENT_ID")
+        os.environ["SPOTIFY_CLIENT_SECRET"] = SETTINGS.value("SPOTIFY_CLIENT_SECRET")
+        os.environ["SPOTIFY_REDIRECT_URI"] = SETTINGS.value("SPOTIFY_REDIRECT_URI")
 
         try:
             ytm2spt.main(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dry_run, create_new, limit)
         except Exception as e:
+            print(e)
+            print(traceback.format_exc())
             self.cmd_textbox.setText("Error running command: " + str(e))
             QMessageBox.warning(self, "Error", "Error: Failed to run ytm2spt")
 

@@ -38,6 +38,7 @@ jobs:
           nuitka-version: main
           script-name: ytm2spt.py
           enable-plugins: pyside6
+          user-package-configuration-file: ytmusicapi.nuitka-package.config.yaml
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
