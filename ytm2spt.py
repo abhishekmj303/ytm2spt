@@ -6,7 +6,7 @@
 #    nuitka-project: --macos-create-app-bundle
 #
 # Debugging options, controlled via environment variable at compile time.
-# nuitka-project-if: os.getenv("DEBUG_COMPILATION", "yes") == "yes"
+# nuitka-project-if: os.getenv("DEBUG_COMPILATION", "yes") == "yes":
 #     nuitka-project: --enable-console
 # nuitka-project-else:
 #     nuitka-project: --disable-console
