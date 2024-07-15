@@ -18,7 +18,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget\
     , QLabel, QLineEdit, QCheckBox, QSpinBox, QTextEdit, QPushButton\
     , QVBoxLayout, QFormLayout, QHBoxLayout, QDialog, QButtonGroup\
     , QRadioButton, QGroupBox, QMessageBox
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt, QSettings, QThread, Signal
 from PySide6 import QtCore
 from ytmusicapi import setup_oauth
 import ytm2spt
@@ -242,9 +242,9 @@ class MainWindow(QMainWindow):
         cmd_layout.addWidget(self.cmd_textbox)
         
         # Create button to run the command
-        run_button = QPushButton("Run Command")
-        run_button.clicked.connect(self.run_command)
-        cmd_layout.addWidget(run_button)
+        self.run_button = QPushButton("Run Command")
+        self.run_button.clicked.connect(self.run_command)
+        cmd_layout.addWidget(self.run_button)
 
         layout.addWidget(cmd_group)
 
@@ -264,18 +264,18 @@ class MainWindow(QMainWindow):
     def update_command(self):
         command = "ytm2spt"
         
-        if self.yt_input.text():
-            command += f" -yt \"{self.yt_input.text()}\""
+        if self.yt_input.text().strip():
+            command += f" -yt \"{self.yt_input.text().strip()}\""
         else:
             command = "YouTube playlist URL or ID is required"
             self.cmd_textbox.setText(command)
             return
         
         if self.sp_group.isChecked():
-            if self.use_url_radio.isChecked() and self.sp_input.text():
-                command += f" -sp \"{self.sp_input.text()}\""
-            elif self.use_name_radio.isChecked() and self.spname_input.text():
-                command += f" -spname \"{self.spname_input.text()}\""
+            if self.use_url_radio.isChecked() and self.sp_input.text().strip():
+                command += f" -sp \"{self.sp_input.text().strip()}\""
+            elif self.use_name_radio.isChecked() and self.spname_input.text().strip():
+                command += f" -spname \"{self.spname_input.text().strip()}\""
         
             if self.use_name_radio.isChecked() and self.create_new_checkbox.isChecked():
                 command += " -n"
@@ -293,6 +293,12 @@ class MainWindow(QMainWindow):
         self.cmd_textbox.setText(command)
         
     def run_command(self):
+        if "Stop" in self.run_button.text():
+            self.worker.terminate()
+            self.run_button.setText("Run Command")
+            return
+        else:
+            self.run_button.setText("Stop Command")
         # Get the input values
         youtube_arg = self.yt_input.text().strip()
         if not youtube_arg:
@@ -317,14 +323,21 @@ class MainWindow(QMainWindow):
         os.environ["SPOTIFY_CLIENT_SECRET"] = SETTINGS.value("SPOTIFY_CLIENT_SECRET")
         os.environ["SPOTIFY_REDIRECT_URI"] = SETTINGS.value("SPOTIFY_REDIRECT_URI")
 
-        try:
-            ytm2spt.main(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dry_run, create_new, limit)
-            QMessageBox.information(self, "Success", "Successfully ran ytm2spt")
-        except Exception as e:
-            print(e)
-            print(traceback.format_exc())
-            self.cmd_textbox.setText("Error running command: " + str(e))
-            QMessageBox.warning(self, "Error", "Error: Failed to run ytm2spt")
+        # Run ytm2spt
+        self.worker = RunCommandWorker(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dry_run, create_new, limit)
+        self.worker.finished.connect(self.run_finished)
+        self.worker.error.connect(self.run_error)
+        self.worker.start()
+
+    def run_finished(self):
+        QMessageBox.information(self, "Info", "Finished running ytm2spt")
+        self.run_button.setText("Run Command")
+
+
+    def run_error(self, error):
+        self.cmd_textbox.setText("Error running command: " + error)
+        QMessageBox.warning(self, "Error", "Error: Failed to run ytm2spt")
+        self.run_button.setText("Run Command")
 
     def open_spotify_settings(self):
         settings_dialog = SpotifySettingsDialog(self)
@@ -341,6 +354,30 @@ class MainWindow(QMainWindow):
                 self.open_youtube_settings()
 
 
+class RunCommandWorker(QThread):
+    finished = Signal()
+    error = Signal(str)
+
+    def __init__(self, youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dry_run, create_new, limit):
+        super().__init__()
+        self.youtube_arg = youtube_arg
+        self.spotify_arg = spotify_arg
+        self.spotify_playlist_name = spotify_playlist_name
+        self.youtube_oauth = youtube_oauth
+        self.dry_run = dry_run
+        self.create_new = create_new
+        self.limit = limit
+    
+    def run(self):
+        try:
+            ytm2spt.main(self.youtube_arg, self.spotify_arg, self.spotify_playlist_name, self.youtube_oauth, self.dry_run, self.create_new, self.limit)
+            self.finished.emit()
+        except Exception as e:
+            print(e)
+            print(traceback.format_exc())
+            self.error.emit(str(e))
+
+
 # Create the application
 app = QApplication(sys.argv)
 
@@ -351,6 +388,8 @@ init_settings()
 window = MainWindow()
 window.setMinimumWidth(400)
 window.show()
+
+print("Welcome to ytm2spt!")
 
 # Run the event loop
 sys.exit(app.exec())
