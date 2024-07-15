@@ -69,6 +69,12 @@ class SpotifySettingsDialog(QDialog):
 
         layout = QFormLayout(self)
 
+        info_label = QLabel()
+        info_label.setWordWrap(True)
+        info_label.setText('<a href="https://github.com/abhishekmj303/ytm2spt?tab=readme-ov-file#spotify-developer-account">Click here for more info</a>')
+        info_label.setOpenExternalLinks(True)
+        layout.addRow(info_label)
+
         self.user_id_input = QLineEdit()
         self.user_id_input.setText(SETTINGS.value("SPOTIFY_USER_ID", defaultValue=""))
         # self.user_id_input.setPlaceholderText("This is not email")
@@ -312,6 +318,7 @@ class MainWindow(QMainWindow):
 
         try:
             ytm2spt.main(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dry_run, create_new, limit)
+            QMessageBox.information(self, "Success", "Successfully ran ytm2spt")
         except Exception as e:
             print(e)
             print(traceback.format_exc())
