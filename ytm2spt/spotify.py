@@ -1,22 +1,11 @@
-from spotipy import util
-import requests 
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+from spotipy.exceptions import SpotifyException
 import os
 from .app_logger import setup_logger
-from urllib.parse import quote
 from .utils import fuzzy_match_artist, artist_names_from_tracks
-from typing import Literal, Any, Union
+from typing import Union
 from datetime import datetime
-
-# Fixes the issue of requests not timing out in Python versions < 3.11
-DEFAULT_TIMEOUT = 10
-old_send = requests.Session.send
-
-def new_send(*args, **kwargs):
-    if kwargs.get("timeout", None) is None:
-        kwargs["timeout"] = DEFAULT_TIMEOUT
-    return old_send(*args, **kwargs)
-
-requests.Session.send = new_send
 
 
 def generate_description() -> str:
@@ -26,31 +15,15 @@ def generate_description() -> str:
     return description
 
 
-class SpotifyClientManager:
-    def __init__(self):
-        self.scope = 'playlist-read-collaborative playlist-modify-private playlist-modify-public playlist-read-private ugc-image-upload'
-        self.user_id = os.getenv('SPOTIFY_USER_ID')
-        self.client_id = os.getenv('SPOTIFY_CLIENT_ID')
-        self.client_secret = os.getenv('SPOTIFY_CLIENT_SECRET')
-        self.redirect_uri = os.getenv('SPOTIFY_REDIRECT_URI')
-
-    @property
-    def token(self):
-        '''
-        Return the access token
-        '''
-        return util.prompt_for_user_token(
-            self.user_id,
-            scope=self.scope,
-            client_id=self.client_id,
-            client_secret=self.client_secret,
-            redirect_uri=self.redirect_uri
-        )
-
-
 class Spotify:
     def __init__(self):
-        self.spotify = SpotifyClientManager()
+        self.user_id = os.getenv('SPOTIFY_USER_ID')
+        self.spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(
+            client_id=os.getenv('SPOTIFY_CLIENT_ID'),
+            client_secret=os.getenv('SPOTIFY_CLIENT_SECRET'),
+            redirect_uri=os.getenv('SPOTIFY_REDIRECT_URI'),
+            scope='playlist-read-collaborative playlist-modify-private playlist-modify-public playlist-read-private ugc-image-upload'
+        ))
         self.playlist_id = ""
         self.spotify_logger = setup_logger(__name__)
         # print(self.spotify.token)
@@ -60,126 +33,57 @@ class Spotify:
         self.spotify_logger.debug(f"Set Playlist ID: {self.playlist_id}")
     
     def get_user_playlists(self) -> 'list':
-        url = f"https://api.spotify.com/v1/users/{self.spotify.user_id}/playlists"
-        response = requests.get(
-            url,
-            headers={
-                "Authorization": f"Bearer {self.spotify.token}",
-                "Content-Type": "application/json"
-            }
-        )
-        playlists = response.json()["items"]
+        playlists = self.spotify.user_playlists(self.user_id)["items"]
         self.spotify_logger.debug(f"Got User's Playlists: {playlists}")
         return playlists
 
     def create_playlist(self, playlist_name: str, description: str = "") -> str:
-        if not description:
-            description = generate_description()
-        request_body = {
-            "name": playlist_name,
-            "description": description,
-            "public": False
-        }
-
-        query = f"https://api.spotify.com/v1/users/{self.spotify.user_id}/playlists"
-
-        response = requests.post(
-            query,
-            json=request_body,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.spotify.token}"
-            }
-        )
-
-        playlist = response.json()
+        playlist = self.spotify.user_playlist_create(self.user_id, playlist_name, description)
         self.spotify_logger.debug(f"Created Playlist: {playlist}")
         return playlist['id']
     
-    def set_playlist_description(self, description: str = "", playlist_id: str = "") -> bool:
+    def set_playlist_description(self, description: str = "", playlist_id: str = "") -> None:
         if not playlist_id:
             playlist_id = self.playlist_id
         if not description:
             description = generate_description()
-        url = f"https://api.spotify.com/v1/playlists/{playlist_id}"
-        response = requests.put(
-            url,
-            json={"description": description},
-            headers={
-                "Authorization": f"Bearer {self.spotify.token}",
-                "Content-Type": "application/json"
-            }
-        )
-        self.spotify_logger.debug(f"Set Playlist {playlist_id} Description {description}: {response.status_code}")
-        return response.ok
+        self.spotify.playlist_change_details(playlist_id, description=description)
+        self.spotify_logger.debug(f"Set Playlist {playlist_id} Description {description}")
     
     def get_playlist_name(self, playlist_id: str = "") -> str:
         if not playlist_id:
             playlist_id = self.playlist_id
-        url = f"https://api.spotify.com/v1/playlists/{playlist_id}"
-        response = requests.get(
-            url,
-            headers={
-                "Authorization": f"Bearer {self.spotify.token}",
-                "Content-Type": "application/json"
-            }
-        )
-        playlist_name = response.json()["name"]
+        playlist_name = self.spotify.playlist(playlist_id)["name"]
         self.spotify_logger.debug(f"Got Playlist Name: {playlist_name}")
         return playlist_name
     
     def get_playlist_items(self, playlist_id: str = "", limit: int = 100) -> 'dict':
         if not playlist_id:
             playlist_id = self.playlist_id
-        url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?fields=total%2Climit%2Citems%28track.id%29&limit={limit}"
-        response = requests.get(
-            url,
-            headers={
-                "Authorization": f"Bearer {self.spotify.token}",
-                "Content-Type": "application/json"
-            }
-        )
-        result = response.json()["items"]
+        result = self.spotify.playlist_tracks(playlist_id, limit=limit)["items"]
         track_ids = [t["track"]["id"] for t in result]
         self.spotify_logger.debug(f"Got Playlist Items: {track_ids}")
         return track_ids
     
-    def empty_playlist(self, playlist_id: str = "") -> bool:
+    def empty_playlist(self, playlist_id: str = "") -> None:
         if not playlist_id:
             playlist_id = self.playlist_id
-        track_ids = self.get_playlist_items(playlist_id)
-        track_uris = [{"uri": "spotify:track:"+id} for id in track_ids]
+        tracks = self.get_playlist_items(playlist_id)
+        track_ids = [id for id in tracks]
 
-        url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
-        response = requests.delete(
-            url,
-            json={"tracks": track_uris},
-            headers={
-                "Authorization": f"Bearer {self.spotify.token}",
-                "Content-Type": "application/json"
-            }
-        )
-        self.spotify_logger.debug(f"Emptied Playlist {playlist_id}: {response.status_code}")
-        return response.ok
+        if not track_ids:
+            self.spotify_logger.debug(f"Playlist {playlist_id} is already empty")
+            return
 
-    def get_song_uri(self, artist: str, song_name: str) -> 'str':
-        track_request = quote(f'{song_name} {artist}')  # TODO: intercept None types as nulls and exit search. 
-        query = f'https://api.spotify.com/v1/search?q={track_request}&type=track&limit=10'
-        self.spotify_logger.debug(f'Query arguments: {query}')
+        self.spotify.playlist_remove_all_occurrences_of_items(playlist_id, track_ids)
+        self.spotify_logger.debug(f"Emptied Playlist {playlist_id}")
 
-        response = requests.get(
-            query,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.spotify.token}"
-            }
-        )
-
-        if not response.ok:
-            self.spotify_logger.debug(f"Response Code: {response.status_code}")
+    def get_song_uri(self, artist: str, song_name: str) -> Union['str', None]:
+        try:
+            results = self.spotify.search(f'{song_name} {artist}', type='track', limit=10)
+        except SpotifyException as e:
+            self.spotify_logger.error(f"Error searching for song: {e}")
             return None
-
-        results = response.json()
 
         tracks_found = results['tracks']['items']
 
@@ -199,51 +103,27 @@ class Spotify:
     def add_song_to_playlist(self, song_uri: str, playlist_id: str = "") -> bool:
         if not playlist_id:
             playlist_id = self.playlist_id
-        url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
-        response = requests.post(
-            url,
-            json={"uris": [song_uri]},
-            headers={
-                "Authorization": f"Bearer {self.spotify.token}",
-                "Content-Type": "application/json"
-            }
-        )
-        self.spotify_logger.debug(f"Added Song {song_uri} to Playlist {playlist_id}: {response.status_code}")
-        return response.ok
+        try:
+            self.spotify.playlist_add_items(playlist_id, [song_uri])
+            self.spotify_logger.debug(f"Added Song {song_uri} to Playlist {playlist_id}")
+            return True
+        except SpotifyException as e:
+            self.spotify_logger.error(f"Error adding song to playlist: {e}")
+            return False
     
     def set_playlist_cover(self, encoded_img: str, playlist_id: str = "") -> bool:
         if not playlist_id:
             playlist_id = self.playlist_id
-        url = f"https://api.spotify.com/v1/playlists/{playlist_id}/images"
-        response = requests.put(
-            url,
-            data=encoded_img,
-            headers={
-                "Authorization": f"Bearer {self.spotify.token}",
-                "Content-Type": "image/jpeg"
-            }
-        )
-        self.spotify_logger.debug(f"Set Playlist Cover: {response.status_code}")
-        return response.ok
+        try:
+            self.spotify.playlist_upload_cover_image(playlist_id, encoded_img)
+            self.spotify_logger.debug(f"Set Playlist Cover: {encoded_img}")
+            return True
+        except SpotifyException as e:
+            self.spotify_logger.error(f"Error setting playlist cover: {e}")
+            return False
 
-    def _num_playlist_songs(self, playlist_id: str = "") -> Union[Any, Literal[False], None]:
+    def _num_playlist_songs(self, playlist_id: str = "") -> Union['int', None]:
         if not playlist_id:
             playlist_id = self.playlist_id
-        url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
-
-        response = requests.get(
-            url,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.spotify.token}"
-            }
-        )
-
-        if not response.ok:
-            self.spotify_logger.error("Bad API Response")
-            return response.ok
-
-        results = response.json()
-        if 'total' in results:
-            return results['total']
-        return None
+        results = self.spotify.playlist_items(playlist_id, limit=1)
+        return results.get("total")

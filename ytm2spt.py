@@ -174,7 +174,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(yt_group)
         
         # Spotify
-        self.sp_group = QGroupBox("Spotify (modify default)")
+        self.sp_group = QGroupBox("Spotify (configure)")
         self.sp_group.setCheckable(True)
         self.sp_group.setChecked(False)
         self.sp_group.clicked.connect(self.update_command)
@@ -302,9 +302,10 @@ class MainWindow(QMainWindow):
         
         if self.use_url_radio.isChecked():
             spotify_arg = self.sp_input.text().strip()
+            spotify_playlist_name = None
         else:
+            spotify_arg = None
             spotify_playlist_name = self.spname_input.text().strip()
-            spotify_arg = ""
         
         youtube_oauth = YTOAUTH_PATH if self.yt_private_checkbox.isChecked() else None
         dry_run = self.dryrun_checkbox.isChecked()
