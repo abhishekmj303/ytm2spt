@@ -69,6 +69,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            ytm2spt-{{ github.ref_name }}-windows.zip
-            ytm2spt-{{ github.ref_name }}-linux.tar.gz
-            ytm2spt-{{ github.ref_name }}-macos.zip
+            ytm2spt-${{ github.ref_name }}-windows.zip
+            ytm2spt-${{ github.ref_name }}-linux.tar.gz
+            ytm2spt-${{ github.ref_name }}-macos.zip
