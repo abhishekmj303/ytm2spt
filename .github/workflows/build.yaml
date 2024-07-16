@@ -39,10 +39,13 @@ jobs:
           enable-plugins: pyside6
           user-package-configuration-file: ytmusicapi.nuitka-package.config.yaml
 
+      - name: lowercase the runner OS name
+        run: echo ::set-env name=RUNNER_OS::${${{ runner.os }},,}
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ytm2spt-${{ matrix.os }}-build
+          name: ytm2spt-${{ env.RUNNER_OS }}-build
           path: | # match what's created for the 3 OSes
             build/*.exe
             build/*.bin
@@ -58,16 +61,29 @@ jobs:
         uses: actions/download-artifact@v4
       - run: ls -R
 
-      - name: Compress Artifacts
+      - name: Add Executable Permissions
         run: |
           chmod +x *build/*.bin *build/*.exe *build/*.app/Contents/MacOS/*
-          zip -9 ytm2spt-${{ github.ref_name }}-windows.zip *build/*.exe
-          tar -cavf ytm2spt-${{ github.ref_name }}-linux.tar.gz *build/*.bin
-          zip -r -9 ytm2spt-${{ github.ref_name }}-macos.zip *build/*.app
+      
+      - name: Zip Windows Executable
+        run: |
+          cd *windows-build
+          zip -9 ytm2spt-${{ github.ref_name }}-windows.zip *.exe
+      
+      - name: Tar Linux Executable
+        run: |
+          cd *linux-build
+          tar -cavf ytm2spt-${{ github.ref_name }}-linux.tar.gz *.bin
+      
+      - name: Zip MacOS Executable
+        run: |
+          cd *macos-build
+          zip -r -9 ytm2spt-${{ github.ref_name }}-macos.zip *.app
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
+          draft: true
           files: |
             ytm2spt-${{ github.ref_name }}-windows.zip
             ytm2spt-${{ github.ref_name }}-linux.tar.gz
