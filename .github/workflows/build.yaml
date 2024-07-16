@@ -1,7 +1,11 @@
+name: Build and Release
+
 on:
   push:
     branches:
       - release
+    tags:
+      - "v*"
   pull_request:
     branches:
       - release
@@ -49,3 +53,27 @@ jobs:
             build/*.bin
             build/*.app/**/*
           overwrite: true
+  
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+      - run: ls -R
+
+      - name: Compress Artifacts
+        run: |
+          chmod +x *.bin *.exe *.app/Contents/MacOS/*
+          zip -9 ytm2spt-{{ github.ref_name }}-windows.zip *.exe
+          tar -cavf ytm2spt-{{ github.ref_name }}-linux.tar.gz *.bin
+          zip -r -9 ytm2spt-{{ github.ref_name }}-macos.zip *.app
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ytm2spt-{{ github.ref_name }}-windows.zip
+            ytm2spt-{{ github.ref_name }}-linux.tar.gz
+            ytm2spt-{{ github.ref_name }}-macos.zip
