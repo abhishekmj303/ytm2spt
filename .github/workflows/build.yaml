@@ -2,13 +2,8 @@ name: Build and Release
 
 on:
   push:
-    branches:
-      - release
     tags:
       - "v*"
-  pull_request:
-    branches:
-      - release
 
 jobs:
   build:
@@ -47,7 +42,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ runner.os }} Build
+          name: ytm2spt-${{ matrix.os }}-build
           path: | # match what's created for the 3 OSes
             build/*.exe
             build/*.bin
@@ -65,10 +60,10 @@ jobs:
 
       - name: Compress Artifacts
         run: |
-          chmod +x *.bin *.exe *.app/Contents/MacOS/*
-          zip -9 ytm2spt-{{ github.ref_name }}-windows.zip *.exe
-          tar -cavf ytm2spt-{{ github.ref_name }}-linux.tar.gz *.bin
-          zip -r -9 ytm2spt-{{ github.ref_name }}-macos.zip *.app
+          chmod +x *build/*.bin *build/*.exe *build/*.app/Contents/MacOS/*
+          zip -9 ytm2spt-${{ github.ref_name }}-windows.zip *build/*.exe
+          tar -cavf ytm2spt-${{ github.ref_name }}-linux.tar.gz *build/*.bin
+          zip -r -9 ytm2spt-${{ github.ref_name }}-macos.zip *build/*.app
 
       - name: Release
         uses: softprops/action-gh-release@v2
