@@ -146,6 +146,8 @@ def main(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dryrun,
     if dryrun:
         ytm2spt_logger.info("Dryrun mode enabled. No songs will be added to Spotify.")
     else:
+        if not (spotify_arg or spotify_playlist_name):
+            spotify_playlist_name = yt.get_playlist_title()
         spotify_id = get_spotify_playlist_id(spotify_arg, spotify_playlist_name, create_new, dryrun)
         ytm2spt_logger.info(f"Spotify Playlist ID: {spotify_id}")
         sp.set_playlist_id(spotify_id)

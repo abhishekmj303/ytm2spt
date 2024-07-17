@@ -17,11 +17,11 @@ def generate_description() -> str:
 
 class Spotify:
     def __init__(self):
-        self.user_id = os.getenv('SPOTIFY_USER_ID')
+        self.user_id = os.environ["SPOTIFY_USER_ID"]
         self.spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(
-            client_id=os.getenv('SPOTIFY_CLIENT_ID'),
-            client_secret=os.getenv('SPOTIFY_CLIENT_SECRET'),
-            redirect_uri=os.getenv('SPOTIFY_REDIRECT_URI'),
+            client_id=os.environ['SPOTIFY_CLIENT_ID'],
+            client_secret=os.environ['SPOTIFY_CLIENT_SECRET'],
+            redirect_uri=os.environ['SPOTIFY_REDIRECT_URI'],
             scope='playlist-read-collaborative playlist-modify-private playlist-modify-public playlist-read-private ugc-image-upload'
         ))
         self.playlist_id = ""

@@ -318,14 +318,9 @@ class MainWindow(QMainWindow):
         create_new = self.create_new_checkbox.isChecked()
         limit = self.limit_input.value() if self.limit_input.value() > 0 else None
 
-        os.environ["SPOTIFY_USER_ID"] = SETTINGS.value("SPOTIFY_USER_ID")
-        os.environ["SPOTIFY_CLIENT_ID"] = SETTINGS.value("SPOTIFY_CLIENT_ID")
-        os.environ["SPOTIFY_CLIENT_SECRET"] = SETTINGS.value("SPOTIFY_CLIENT_SECRET")
-        os.environ["SPOTIFY_REDIRECT_URI"] = SETTINGS.value("SPOTIFY_REDIRECT_URI")
-
         # Run ytm2spt
         self.worker = RunCommandWorker(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dry_run, create_new, limit)
-        self.worker.finished.connect(self.run_finished)
+        self.worker.completed.connect(self.run_finished)
         self.worker.error.connect(self.run_error)
         self.worker.start()
 
@@ -355,7 +350,7 @@ class MainWindow(QMainWindow):
 
 
 class RunCommandWorker(QThread):
-    finished = Signal()
+    completed = Signal()
     error = Signal(str)
 
     def __init__(self, youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dry_run, create_new, limit):
@@ -370,8 +365,12 @@ class RunCommandWorker(QThread):
     
     def run(self):
         try:
+            os.environ["SPOTIFY_USER_ID"] = SETTINGS.value("SPOTIFY_USER_ID")
+            os.environ["SPOTIFY_CLIENT_ID"] = SETTINGS.value("SPOTIFY_CLIENT_ID")
+            os.environ["SPOTIFY_CLIENT_SECRET"] = SETTINGS.value("SPOTIFY_CLIENT_SECRET")
+            os.environ["SPOTIFY_REDIRECT_URI"] = SETTINGS.value("SPOTIFY_REDIRECT_URI")
             ytm2spt.main(self.youtube_arg, self.spotify_arg, self.spotify_playlist_name, self.youtube_oauth, self.dry_run, self.create_new, self.limit)
-            self.finished.emit()
+            self.completed.emit()
         except Exception as e:
             print(e)
             print(traceback.format_exc())
