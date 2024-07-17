@@ -39,15 +39,15 @@ jobs:
           enable-plugins: pyside6
           user-package-configuration-file: ytmusicapi.nuitka-package.config.yaml
 
-      - name: lowercase the runner OS name
+      - id: runnerOS
         env:
           INPUT: ${{ runner.os }}
-        run: echo ::set-env name=RUNNER_OS::${INPUT,,}
+        run: echo "::set-output name=lower::${INPUT,,}"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ytm2spt-${{ env.RUNNER_OS }}-build
+          name: ytm2spt-${{ steps.runnerOS.outputs.lower }}-build
           path: | # match what's created for the 3 OSes
             build/*.exe
             build/*.bin
