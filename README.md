@@ -1,6 +1,8 @@
 # YouTube Music To Spotify
 
-Converts a youtube music playlist to spotify playlist.
+Transfer youtube music playlist to spotify playlist.
+
+![ytm2spt](media/app_ui.png)
 
 - [x] Support public playlists
 - [x] Support private playlists
@@ -24,6 +26,38 @@ Converts a youtube music playlist to spotify playlist.
    ![Spotify credentials](media/spotify_credentials.png)
 4. Copy the "User ID" from your Spotify account: https://www.spotify.com/in-en/account/profile/
    ![Spotify username](media/spotify_username.png)
+
+
+## Installation
+
+Download the latest version from the [releases page](https://github.com/abhishekmj303/ytm2spt/releases/latest).
+
+> [!NOTE]<br>
+> **Windows**: Windows Defender may interrupt the app from running. Click on more info and allow the program to run.
+>
+> **Linux**: You need to run the app from terminal, if you want the to know the progress of the transfer.
+
+
+### Spotify Settings
+
+When you run the executable, you will be prompted to enter your Spotify credentials.
+
+![Spotify Settings](media/spotify_ui.png)
+
+### Youtube Settings
+
+If you click on "Private Playlist", you will be prompted to enter get your Youtube OAuth credentials if not already set.
+
+![Youtube Settings](media/youtube_ui.png)
+
+
+> [!TIP]<br>
+> If you find this project useful or interesting, please consider giving it a 🌟star! It helps others discover it too!
+
+---
+
+
+## CLI
 
 ### Setting Environment Variables Linux and Mac
 
@@ -64,7 +98,7 @@ ytmusicapi oauth
 
 ```sh
 $ source .env
-$ python src/main.py -h
+$ python ytm2spt.py -h
 usage: main.py [-h] -yt YOUTUBE_URL_OR_ID
                [-sp SPOTIFY_URL_OR_ID | -spname SPOTIFY_PLAYLIST_NAME]
                [-ytauth YOUTUBE_OAUTH_JSON]
@@ -93,28 +127,25 @@ Sample Playlist: Pop Certified ([YouTube Music](https://music.youtube.com/playli
 ```sh
 # Pass any link containing a youtube playlist ID
 # Sets same name as youtube playlist
-$ python src/main.py -yt "https://music.youtube.com/playlist?list=RDCLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU"
+$ python ytm2spt.py -yt "https://music.youtube.com/playlist?list=RDCLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU"
 
 # Pass just the youtube playlist ID
 # Set a custom name for the playlist
-$ python src/main.py -yt "CLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -spname "Pop Certified"
+$ python ytm2spt.py -yt "CLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -spname "Pop Certified"
 
 # Pass link of a private youtube playlist
 # Provide the path to the oauth.json file
-$ python src/main.py -yt "https://music.youtube.com/playlist?list=PLz96m0PSfi9p8ABcEcUlSMVmz7sN-IEFu" -ytauth "oauth.json"
+$ python ytm2spt.py -yt "https://music.youtube.com/playlist?list=PLz96m0PSfi9p8ABcEcUlSMVmz7sN-IEFu" -ytauth "oauth.json"
 
 # Pass an existing spotify playlist URL or ID
 # Limit the number of songs to fetch
 # Dry run mode
-$ python src/main.py -yt "CLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -sp "https://open.spotify.com/playlist/6DyIxXHMwuEMbsfPTIr9C8" -l 10 -d
+$ python ytm2spt.py -yt "CLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -sp "https://open.spotify.com/playlist/6DyIxXHMwuEMbsfPTIr9C8" -l 10 -d
 
 # Pass even the URL of video playing from playlist
 # Force create a new playlist
-$ python src/main.py -yt "https://www.youtube.com/watch?v=RlPNh_PBZb4&list=RDCLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -n
+$ python ytm2spt.py -yt "https://www.youtube.com/watch?v=RlPNh_PBZb4&list=RDCLAK5uy_lBNUteBRencHzKelu5iDHwLF6mYqjL-JU" -n
 ```
-
-> [!TIP]<br>
-> If you find this project useful or interesting, please consider giving it a 🌟star! It helps others discover it too!
 
 
 > [!NOTE]<br>

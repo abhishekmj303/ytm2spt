@@ -127,12 +127,12 @@ class YouTubeSettingsDialog(QDialog):
         self.message_label.setWordWrap(True)
         self.message_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         if os.path.exists(YTOAUTH_PATH):
-            self.message_label.setText("OAuth token saved in " + YTOAUTH_PATH)
+            self.message_label.setText("OAuth token saved at " + YTOAUTH_PATH)
         layout.addWidget(self.message_label)
 
     def get_oauth_token(self):
         setup_oauth(filepath=YTOAUTH_PATH, open_browser=True)
-        self.message_label.setText("OAuth token saved to " + YTOAUTH_PATH)
+        self.message_label.setText("OAuth token saved at " + YTOAUTH_PATH)
         # Qt sleep 3 seconds
         QtCore.QTimer.singleShot(3000, self.close)
 
