@@ -87,6 +87,6 @@ jobs:
         with:
           draft: true
           files: |
-            ytm2spt-${{ github.ref_name }}-windows.zip
-            ytm2spt-${{ github.ref_name }}-linux.tar.gz
-            ytm2spt-${{ github.ref_name }}-macos.zip
+            *build/ytm2spt-${{ github.ref_name }}-windows.zip
+            *build/ytm2spt-${{ github.ref_name }}-linux.tar.gz
+            *build/ytm2spt-${{ github.ref_name }}-macos.zip
