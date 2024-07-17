@@ -40,14 +40,14 @@ jobs:
           user-package-configuration-file: ytmusicapi.nuitka-package.config.yaml
 
       - id: runnerOS
-        env:
-          INPUT: ${{ runner.os }}
-        run: echo "::set-output name=lower::${INPUT,,}"
+        uses: ASzc/change-string-case-action@v6
+        with:
+          string: ${{ runner.os }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ytm2spt-${{ steps.runnerOS.outputs.lower }}-build
+          name: ytm2spt-${{ steps.runnerOS.outputs.lowercase }}-build
           path: | # match what's created for the 3 OSes
             build/*.exe
             build/*.bin
