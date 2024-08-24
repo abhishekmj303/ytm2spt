@@ -56,6 +56,19 @@ If you click on "Private Playlist", you will be prompted to enter get your Youtu
 
 ---
 
+## GUI
+
+Python3 is required to run the app. You can download it from [python.org](https://www.python.org/downloads/) for Windows.
+
+### Install Dependencies
+```sh
+pip install -r requirements.txt
+```
+
+### Run the App
+```sh
+python ytm2spt.py
+```
 
 ## CLI
 
