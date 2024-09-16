@@ -161,5 +161,20 @@ $ python ytm2spt.py -yt "https://www.youtube.com/watch?v=RlPNh_PBZb4&list=RDCLAK
 ```
 
 
+## Build an Executable
+
+**Note:** This is only required if you want to build the executable yourself. This is not necessary if you just need to run the app directly using Python.
+
+**Requirements:**
+- C Compiler (gcc, clang)
+- `patchelf` (Linux only)
+- `python3-devel` or similar package in your OS
+
+```sh
+pip install -r requirements.txt.dev
+nuitka ytm2spt.py
+```
+
+
 > [!NOTE]<br>
 > Forked from @edgarh22's [Youtube-to-Spotify-Archiver](https://github.com/edgarh92/Youtube-to-Spotify-Archiver).
