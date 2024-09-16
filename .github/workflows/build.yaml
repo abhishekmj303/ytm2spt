@@ -40,7 +40,7 @@ jobs:
           # user-package-configuration-file: ytmusicapi.nuitka-package.config.yaml
       
       - name: Build Windows Installer
-        if: matrix.platform == 'windows-latest'
+        if: matrix.os == 'windows-latest'
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
           path: windows-installer.iss
