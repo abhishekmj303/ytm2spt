@@ -36,8 +36,15 @@ jobs:
         with:
           nuitka-version: main
           script-name: ytm2spt.py
-          enable-plugins: pyside6
-          user-package-configuration-file: ytmusicapi.nuitka-package.config.yaml
+          onefile: false
+          # enable-plugins: pyside6
+          # user-package-configuration-file: ytmusicapi.nuitka-package.config.yaml
+      
+      - name: Build Windows Installer
+        if: matrix.os == 'windows-latest'
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: windows-installer.iss
 
       - id: runnerOS
         uses: ASzc/change-string-case-action@v6
@@ -70,7 +77,7 @@ jobs:
       - name: Zip Windows Executable
         run: |
           cd *windows-build
-          zip -9 ytm2spt-${{ github.ref_name }}-windows.zip *.exe
+          zip -9 ytm2spt-${{ github.ref_name }}-windows.zip *-installer.exe
       
       - name: Tar Linux Executable
         run: |
