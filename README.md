@@ -1,16 +1,32 @@
-# YouTube Music To Spotify
+<h1 align="center">
+   YouTube Music To Spotify
+</h1>
 
-Transfer youtube music playlist to spotify playlist.
+<p align="center">
+   <a href="https://github.com/abhishekmj303/ytm2spt/stargazers"><img src="https://img.shields.io/github/stars/abhishekmj303/ytm2spt?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"></a>
+   <a href="https://github.com/abhishekmj303/ytm2spt/releases"><img src="https://img.shields.io/github/downloads/abhishekmj303/ytm2spt/total?colorA=363a4f&colorB=a6da95&style=for-the-badge"></a>
+   <a href="https://github.com/abhishekmj303/ytm2spt/issues"><img src="https://img.shields.io/github/issues/abhishekmj303/ytm2spt?colorA=363a4f&colorB=f5a97f&style=for-the-badge"></a>
+</p>
 
-![ytm2spt](media/app_ui.png)
+<p align="center">
+   An open-source app for effortlessly transferring playlists from YouTube Music to Spotify.
+</p>
 
+<p align="center">
+   <img src="https://raw.githubusercontent.com/abhishekmj303/ytm2spt/refs/heads/main/media/app_ui.png">
+</p>
+
+
+## Features
+
+- [x] No limit on size of playlist
 - [x] Support public playlists
 - [x] Support private playlists
 - [x] Auto create or update playlist if it already exists
 - [x] Use fuzzy search to find the best match
 - [x] Copy playlist thumbnail from youtube to spotify
 - [ ] Copy playlist description from youtube to spotify
-- [x] Limit number of songs in the playlist
+- [x] Limit number of songs to be imported in the playlist
 - [x] Dry run mode to test without adding to spotify
 
 
