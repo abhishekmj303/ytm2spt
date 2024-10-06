@@ -200,7 +200,7 @@ def main(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dryrun,
         ytm2spt_logger.info(f'Found {total_songs_found} songs out of {len(songs)}')
     
     if songs_not_found:
-        ytm2spt_logger.warning(f"Songs not found:\n{'\n'.join(songs_not_found)}")
+        ytm2spt_logger.warning(f"Songs not found:\n{chr(10).join(songs_not_found)}")
 
 
 if __name__ == "__main__":
