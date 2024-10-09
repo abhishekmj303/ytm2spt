@@ -20,18 +20,19 @@
 import os
 import sys
 import traceback
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget\
-    , QLabel, QLineEdit, QCheckBox, QSpinBox, QTextEdit, QPushButton\
-    , QVBoxLayout, QFormLayout, QHBoxLayout, QDialog, QButtonGroup\
-    , QRadioButton, QGroupBox, QMessageBox
-from PySide6.QtCore import Qt, QSettings, QThread, Signal
-from PySide6 import QtCore
 from ytmusicapi import setup_oauth
 import ytm2spt
 
 if len(sys.argv) > 1:
     ytm2spt.main(*ytm2spt.get_args())
     exit()
+
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget\
+    , QLabel, QLineEdit, QCheckBox, QSpinBox, QTextEdit, QPushButton\
+    , QVBoxLayout, QFormLayout, QHBoxLayout, QDialog, QButtonGroup\
+    , QRadioButton, QGroupBox, QMessageBox
+from PySide6.QtCore import Qt, QSettings, QThread, Signal
+from PySide6 import QtCore
 
 SETTINGS = QSettings(QSettings.IniFormat, QSettings.UserScope, "ytm2spt", "config")
 YTOAUTH_PATH = os.path.join(os.path.dirname(SETTINGS.fileName()), "oauth.json")
