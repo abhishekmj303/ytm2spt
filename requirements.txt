@@ -2,5 +2,5 @@ Levenshtein
 requests
 spotipy
 thefuzz
-ytmusicapi==1.7.3
+ytmusicapi==1.8.2
 PySide6
