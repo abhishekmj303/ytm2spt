@@ -1,6 +1,7 @@
 from ytmusicapi import YTMusic
 from dataclasses import dataclass
 import re
+import requests
 from .app_logger import setup_logger
 
 @dataclass
@@ -54,7 +55,11 @@ class YoutubeMusic:
         return self.playlist["title"]
     
     def get_playlist_thumbnail(self):
-        return self.playlist["thumbnails"][-1]["url"]
+        for thumbnails in reversed(self.playlist["thumbnails"]):
+            res = requests.head(thumbnails["url"])
+            if int(res.headers['content-length']) < 200*1024:
+                return thumbnails["url"]
+        self.yt_logger("No Thumbnail found which can be used as Playlist Cover")
 
 
 if __name__ == "__main__":
