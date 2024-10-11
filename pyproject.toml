@@ -1,0 +1,46 @@
+[project]
+name = "ytm2spt"
+version = "1.0.2"
+authors = [
+  { name="Abhishek M J", email="abhishekmj303@gmail.com" },
+]
+description = "Transfer Playlists from YouTube Music to Spotify"
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Utilities",
+    "Topic :: Internet",
+    "Environment :: Console",
+    "Environment :: MacOS X",
+    "Environment :: Win32 (MS Windows)",
+    "Environment :: X11 Applications :: Qt",
+]
+dependencies = [
+    "pyside6>=6.8.0",
+    "spotipy>=2.24.0",
+    "thefuzz>=0.22.1",
+    "ytmusicapi==1.8.2",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "nuitka>=2.4.8",
+]
+
+[project.scripts]
+ytm2spt = "ytm2spt:main"
+ytmusicapi-oauth = "ytm2spt.cli:oauth"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.urls]
+Homepage = "https://github.com/abhishekmj303/ytm2spt"
+Issues = "https://github.com/abhishekmj303/ytm2spt/issues"

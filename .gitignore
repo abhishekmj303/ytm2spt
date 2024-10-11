@@ -1,4 +1,4 @@
-.cache*
+.spotipy_cache
 __pycache__
 .env
 .vscode/**
@@ -8,6 +8,7 @@ thumbnail.jpg
 *.log
 *.sh
 oauth.json
+ytmusicapi-oauth.json
 
 # Build files
 *.build
@@ -16,3 +17,4 @@ oauth.json
 *.bin
 *.exe
 venv
+dist

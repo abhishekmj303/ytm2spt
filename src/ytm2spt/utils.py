@@ -22,7 +22,7 @@ def fuzzy_match_artist(artist_names: set, track_input: str) -> bool:
             print(f'Fuzy match not found {match_grade}')
             return False
     except IndexError:
-        utils_logger.debug(f'Issue with ingest to fuzzmatch with data')
+        utils_logger.debug('Issue with ingest to fuzzmatch with data')
         utils_logger.debug(f'Track {track_input}')
         utils_logger.debug(f'{artist_names}')
         print("No data provided to matching process")

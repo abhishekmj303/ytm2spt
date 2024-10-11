@@ -28,6 +28,7 @@ class Spotify:
             redirect_uri=os.environ['SPOTIFY_REDIRECT_URI'],
             scope='playlist-read-collaborative playlist-modify-private playlist-modify-public playlist-read-private ugc-image-upload',
             open_browser=open_browser,
+            cache_path=".spotipy_cache",
         ))
         self.playlist_id = ""
         self.spotify_logger = setup_logger(__name__)

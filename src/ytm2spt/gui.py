@@ -1,38 +1,15 @@
-# Nuitka Configuration
-# nuitka-project: --enable-plugins=pyside6
-# nuitka-project: --user-package-configuration-file=ytmusicapi.nuitka-package.config.yaml
-#
-# Compilation mode, standalone everywhere, except on macOS there app bundle
-# nuitka-project-if: {OS} in ("Linux", "FreeBSD"):
-#    nuitka-project: --onefile
-# nuitka-project-if: {OS} == "Windows":
-#    nuitka-project: --standalone
-# nuitka-project-if: {OS} == "Darwin":
-#    nuitka-project: --standalone
-#    nuitka-project: --macos-create-app-bundle
-#
-# Debugging options, controlled via environment variable at compile time.
-# nuitka-project-if: os.getenv("DEBUG_COMPILATION", "yes") == "yes":
-#     nuitka-project: --enable-console
-# nuitka-project-else:
-#     nuitka-project: --disable-console
-
 import os
 import sys
 import traceback
-from ytmusicapi import setup_oauth
-import ytm2spt
-
-if len(sys.argv) > 1:
-    ytm2spt.main(*ytm2spt.get_args())
-    exit()
-
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget\
     , QLabel, QLineEdit, QCheckBox, QSpinBox, QTextEdit, QPushButton\
     , QVBoxLayout, QFormLayout, QHBoxLayout, QDialog, QButtonGroup\
     , QRadioButton, QGroupBox, QMessageBox
 from PySide6.QtCore import Qt, QSettings, QThread, Signal
 from PySide6 import QtCore
+from ytmusicapi import setup_oauth
+
+from .transfer import transfer_playlist
 
 SETTINGS = QSettings(QSettings.IniFormat, QSettings.UserScope, "ytm2spt", "config")
 YTOAUTH_PATH = os.path.join(os.path.dirname(SETTINGS.fileName()), "oauth.json")
@@ -376,7 +353,7 @@ class RunCommandWorker(QThread):
             os.environ["SPOTIFY_CLIENT_ID"] = SETTINGS.value("SPOTIFY_CLIENT_ID")
             os.environ["SPOTIFY_CLIENT_SECRET"] = SETTINGS.value("SPOTIFY_CLIENT_SECRET")
             os.environ["SPOTIFY_REDIRECT_URI"] = SETTINGS.value("SPOTIFY_REDIRECT_URI")
-            ytm2spt.main(self.youtube_arg, self.spotify_arg, self.spotify_playlist_name, self.youtube_oauth, self.dry_run, self.create_new, self.limit)
+            transfer_playlist(self.youtube_arg, self.spotify_arg, self.spotify_playlist_name, self.youtube_oauth, self.dry_run, self.create_new, self.limit)
             self.completed.emit()
         except Exception as e:
             print(e)
@@ -384,18 +361,23 @@ class RunCommandWorker(QThread):
             self.error.emit(str(e))
 
 
-# Create the application
-app = QApplication(sys.argv)
+def main():
+    # Create the application
+    app = QApplication(sys.argv)
 
-# Initialize settings
-init_settings()
+    # Initialize settings
+    init_settings()
 
-# Create the main window
-window = MainWindow()
-window.setMinimumWidth(400)
-window.show()
+    # Create the main window
+    window = MainWindow()
+    window.setMinimumWidth(400)
+    window.show()
 
-print("Welcome to ytm2spt!")
+    print("Welcome to ytm2spt!")
 
-# Run the event loop
-sys.exit(app.exec())
+    # Run the event loop
+    sys.exit(app.exec())
+
+
+if __name__ == '__main__':
+    main()
