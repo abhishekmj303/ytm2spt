@@ -29,7 +29,9 @@ jobs:
             **/requirements*.txt
 
       - name: Install the project
-        run: uv sync --all-extras --dev && source .venv/bin/activate
+        run: uv sync
+        env:
+          UV_SYSTEM_PYTHON: "true"
       
       - name: Build a binary wheel and a source tarball
         if: matrix.os == 'ubuntu-latest'
