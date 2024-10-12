@@ -29,7 +29,7 @@ jobs:
             **/requirements*.txt
 
       - name: Install the project
-        run: uv pip sync --system pyproject.toml
+        run: pip install -r requirements.txt
       
       - name: Build a binary wheel and a source tarball
         if: matrix.os == 'ubuntu-latest'
