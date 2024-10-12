@@ -29,9 +29,7 @@ jobs:
             **/requirements*.txt
 
       - name: Install the project
-        run: uv sync
-        env:
-          UV_SYSTEM_PYTHON: "true"
+        run: uv pip sync --system pyproject.toml
       
       - name: Build a binary wheel and a source tarball
         if: matrix.os == 'ubuntu-latest'
