@@ -1,6 +1,6 @@
 [project]
 name = "ytm2spt"
-version = "1.0.2"
+version = "1.0.3-rc1"
 authors = [
   { name="Abhishek M J", email="abhishekmj303@gmail.com" },
 ]

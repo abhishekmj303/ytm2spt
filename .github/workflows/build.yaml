@@ -1,15 +1,13 @@
 name: Build and Release
 
-on:
-  push:
-    tags:
-      - "v*"
+on: push
 
 jobs:
   build:
+    if: ${{ startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/release' }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -17,17 +15,34 @@ jobs:
       - name: Check-out repository
         uses: actions/checkout@v4
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version-file: ".python-version"
           cache: "pip"
           cache-dependency-path: |
             **/requirements*.txt
 
-      - name: Install your Dependencies
+      - name: Install the project
+        run: uv sync --all-extras --dev && source .venv/bin/activate
+      
+      - name: Build a binary wheel and a source tarball
+        if: matrix.os == 'ubuntu-latest'
         run: |
-          pip install -r requirements.txt
+          uv build
+      
+      - name: Store the distribution packages
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+          overwrite: true
 
       - name: Build Executable with Nuitka
         uses: Nuitka/Nuitka-Action@main
@@ -60,40 +75,84 @@ jobs:
             build/*.bin
             build/*.app/**/*
           overwrite: true
+
+  publish-to-testpypi:
+    name: Publish Python 🐍 distribution 📦 to TestPyPI
+    needs:
+    - build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/ytm2spt
+
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution 📦 to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
   
   release:
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: build
+    needs:
+    - build
+    - publish-to-testpypi
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+      id-token: write  # IMPORTANT: mandatory for sigstore
+
     steps:
-      - name: Download All Artifacts
-        uses: actions/download-artifact@v4
-      - run: ls -R
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Sign the dists with Sigstore
+      uses: sigstore/gh-action-sigstore-python@v2.1.1
+      with:
+        inputs: >-
+          ./dist/*.tar.gz
+          ./dist/*.whl
+    
+    - name: Download All Artifacts
+      uses: actions/download-artifact@v4
+    - run: ls -R
 
-      - name: Add Executable Permissions
-        run: |
-          chmod +x *build/*.bin *build/*.exe *build/*.app/Contents/MacOS/*
-      
-      - name: Zip Windows Executable
-        run: |
-          cd *windows-build
-          zip -9 ytm2spt-${{ github.ref_name }}-windows.zip *-installer.exe
-      
-      - name: Tar Linux Executable
-        run: |
-          cd *linux-build
-          tar -cavf ytm2spt-${{ github.ref_name }}-linux.tar.gz *.bin
-      
-      - name: Zip MacOS Executable
-        run: |
-          cd *macos-build
-          zip -r -9 ytm2spt-${{ github.ref_name }}-macos.zip *.app
+    - name: Add Executable Permissions
+      run: |
+        chmod +x *build/*.bin *build/*.exe *build/*.app/Contents/MacOS/*
+    
+    - name: Zip Windows Executable
+      run: |
+        cd *windows-build
+        zip -9 ytm2spt-${{ github.ref_name }}-windows.zip *-installer.exe
+    
+    - name: Zip Linux Executable
+      run: |
+        cd *linux-build
+        tar -cavf ytm2spt-${{ github.ref_name }}-linux.tar.gz *.bin
+    
+    - name: Zip MacOS Executable
+      run: |
+        cd *macos-build
+        zip -r -9 ytm2spt-${{ github.ref_name }}-macos.zip *.app
 
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        with:
-          draft: true
-          files: |
-            *build/ytm2spt-${{ github.ref_name }}-windows.zip
-            *build/ytm2spt-${{ github.ref_name }}-linux.tar.gz
-            *build/ytm2spt-${{ github.ref_name }}-macos.zip
+    - name: GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        draft: true
+        generate_release_notes: true
+        files: |
+          *build/ytm2spt-${{ github.ref_name }}-windows.zip
+          *build/ytm2spt-${{ github.ref_name }}-linux.tar.gz
+          *build/ytm2spt-${{ github.ref_name }}-macos.zip
+          dist/*

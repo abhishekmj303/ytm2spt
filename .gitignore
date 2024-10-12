@@ -18,3 +18,4 @@ ytmusicapi-oauth.json
 *.exe
 venv
 dist
+build
