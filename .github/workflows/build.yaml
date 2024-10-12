@@ -29,7 +29,7 @@ jobs:
             **/requirements*.txt
 
       - name: Install the project
-        run: pip install -r requirements.txt
+        run: pip install .
       
       - name: Build a binary wheel and a source tarball
         if: matrix.os == 'ubuntu-latest'
