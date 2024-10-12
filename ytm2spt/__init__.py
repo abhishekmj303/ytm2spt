@@ -51,10 +51,14 @@ def get_spotify_playlist_id(spotify_arg: str, spotify_playlist_name: str, create
             return sp.create_playlist(yt.get_playlist_title())
 
 
-def set_yt_thumbnail_as_sp_cover():
+def set_yt_thumbnail_as_sp_cover(dryrun: bool = False):
     thumbnail_url = yt.get_playlist_thumbnail()
-
+    if not thumbnail_url:
+        return
     request.urlretrieve(thumbnail_url, "thumbnail.jpg")
+
+    if dryrun:
+        return
 
     with open("thumbnail.jpg", "rb") as img:
         encoded_img = base64.b64encode(img.read())
@@ -145,6 +149,8 @@ def main(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dryrun,
     
     if dryrun:
         ytm2spt_logger.info("Dryrun mode enabled. No songs will be added to Spotify.")
+        set_yt_thumbnail_as_sp_cover(dryrun=True)
+        ytm2spt_logger.info("Get playlist cover from youtube thumbnail")
     else:
         if not (spotify_arg or spotify_playlist_name):
             spotify_playlist_name = yt.get_playlist_title()
