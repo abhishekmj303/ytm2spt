@@ -187,7 +187,7 @@ $ python ytm2spt.py -yt "https://www.youtube.com/watch?v=RlPNh_PBZb4&list=RDCLAK
 - `python3-devel` or similar package in your OS
 
 ```sh
-pip install -r requirements.txt.dev
+pip install -r requirements-dev.txt
 nuitka ytm2spt.py
 ```
 

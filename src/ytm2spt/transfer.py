@@ -1,9 +1,7 @@
-from typing import Any
 from .spotify import Spotify
 from .youtube import YoutubeMusic
 from urllib import request
 import base64
-import argparse
 from .app_logger import setup_logger
 
 
@@ -64,79 +62,8 @@ def set_yt_thumbnail_as_sp_cover(dryrun: bool = False):
         encoded_img = base64.b64encode(img.read())
         sp.set_playlist_cover(encoded_img)
 
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-yt",
-        "--youtube-url-or-id",
-        type=str,
-        default=None,
-        required=True,
-        help="Youtube Playlist URL or ID",
-    )
-    sp_group = parser.add_mutually_exclusive_group(required=False)
-    sp_group.add_argument(
-        "-sp",
-        "--spotify-url-or-id",
-        type=str,
-        default=None,
-        help="Spotify Playlist URL or ID",
-    )
-    sp_group.add_argument(
-        "-spname",
-        "--spotify-playlist-name",
-        type=str,
-        default=None,
-        help="Spotify Playlist Name \
-            (Default: Youtube Playlist Name)",
-    )
-    parser.add_argument(
-        "-ytauth",
-        "--youtube-oauth-json",
-        type=str,
-        default=None,
-        required=False,
-        help="Youtube OAuth JSON filepath (run 'ytmusicapi oauth')"
-    )
-    run_group = parser.add_mutually_exclusive_group(required=False)
-    run_group.add_argument(
-        "-n",
-        "--create-new",
-        action="store_true",
-        required=False,
-        default=False,
-        help="Force create a new playlist",
-    )
-    run_group.add_argument(
-        "-d",
-        "--dryrun",
-        action="store_true",
-        required=False,
-        default=False,
-        help="Do not add to Spotify",
-    )
-    parser.add_argument(
-        "-l",
-        "--limit",
-        type=int,
-        default=None,
-        required=False,
-        help="Limit the number of songs to fetch",
-    )
 
-    args = parser.parse_args()
-    youtube = args.youtube_url_or_id
-    youtube_oauth = args.youtube_oauth_json
-    spotify = args.spotify_url_or_id
-    spotify_playlist_name = args.spotify_playlist_name
-    dryrun = args.dryrun
-    create_new = args.create_new
-    limit = args.limit
-
-    return youtube, spotify, spotify_playlist_name, youtube_oauth, dryrun, create_new, limit
-
-
-def main(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dryrun, create_new, limit):
+def transfer_playlist(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dryrun, create_new, limit):
     global yt, sp
     yt = YoutubeMusic(youtube_oauth)
     sp = Spotify()
@@ -207,7 +134,3 @@ def main(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dryrun,
     
     if songs_not_found:
         ytm2spt_logger.warning(f"Songs not found:\n{chr(10).join(songs_not_found)}")
-
-
-if __name__ == "__main__":
-    main(get_args())
