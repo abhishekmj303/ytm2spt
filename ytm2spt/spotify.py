@@ -1,3 +1,4 @@
+import platform
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from spotipy.exceptions import SpotifyException
@@ -18,11 +19,15 @@ def generate_description() -> str:
 class Spotify:
     def __init__(self):
         self.user_id = os.environ["SPOTIFY_USER_ID"]
+        open_browser = True
+        if platform.system() == "Linux" and not (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY")):
+            open_browser = False
         self.spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(
             client_id=os.environ['SPOTIFY_CLIENT_ID'],
             client_secret=os.environ['SPOTIFY_CLIENT_SECRET'],
             redirect_uri=os.environ['SPOTIFY_REDIRECT_URI'],
-            scope='playlist-read-collaborative playlist-modify-private playlist-modify-public playlist-read-private ugc-image-upload'
+            scope='playlist-read-collaborative playlist-modify-private playlist-modify-public playlist-read-private ugc-image-upload',
+            open_browser=open_browser,
         ))
         self.playlist_id = ""
         self.spotify_logger = setup_logger(__name__)
