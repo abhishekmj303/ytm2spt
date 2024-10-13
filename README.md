@@ -4,8 +4,8 @@
 
 <p align="center">
    <a href="https://github.com/abhishekmj303/ytm2spt/stargazers"><img src="https://img.shields.io/github/stars/abhishekmj303/ytm2spt?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"></a>
-   <a href="https://github.com/abhishekmj303/ytm2spt/releases"><img src="https://img.shields.io/github/downloads/abhishekmj303/ytm2spt/total?colorA=363a4f&colorB=a6da95&style=for-the-badge"></a>
-   <a href="https://github.com/abhishekmj303/ytm2spt/issues"><img src="https://img.shields.io/github/issues/abhishekmj303/ytm2spt?colorA=363a4f&colorB=f5a97f&style=for-the-badge"></a>
+   <a href="https://github.com/abhishekmj303/ytm2spt/releases/latest"><img src="https://img.shields.io/github/v/release/abhishekmj303/ytm2spt?colorA=363a4f&colorB=a6da95&style=for-the-badge"></a>
+   <a href="https://github.com/abhishekmj303/ytm2spt/releases"><img src="https://img.shields.io/github/downloads/abhishekmj303/ytm2spt/total?colorA=363a4f&colorB=f5a97f&style=for-the-badge"></a>
 </p>
 
 <p align="center">
@@ -34,6 +34,10 @@
 
 ### Spotify Developer Account
 
+**Why?**
+
+By setting up a Developer account and creating your own credentials (like keys), you are ensuring that the app connects to your account in a safe way without sharing your login details with anyone. It gives you full control over what the app can access and helps keep your Spotify account secure.
+
 1. Create a new app: https://developer.spotify.com/dashboard
 2. Set "Redirect URI" to `http://localhost:8888/callback`
    ![Spotify create new app](media/spotify_create_app.png)
@@ -52,6 +56,25 @@ Download the latest version from the [releases page](https://github.com/abhishek
 > **Windows**: Windows Defender may interrupt the app from running. Click on more info and allow the program to run.
 >
 > **Linux**: You need to run the app from terminal, if you want the to know the progress of the transfer.
+
+**Using pip or [pipx](https://github.com/pypa/pipx#install-pipx):**
+
+[![PyPI - Version](https://img.shields.io/pypi/v/ytm2spt?colorA=363a4f&colorB=c6a0f6&style=for-the-badge)](https://pypi.org/project/ytm2spt/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/ytm2spt?colorA=363a4f&colorB=f0c6c6&style=for-the-badge)](https://pypi.org/p/ytm2spt/)
+
+If you have Python installed, you can install the app using [pipx](https://pipx.pypa.io/) (recommended) or pip.
+
+```sh
+pipx install ytm2spt
+```
+
+or
+
+```sh
+pip install ytm2spt
+```
+
+After installation, you can run the app using the command `ytm2spt`.
 
 
 ### Spotify Settings
@@ -78,7 +101,7 @@ Python3 is required to run the app. You can download it from [python.org](https:
 
 ### Install Dependencies
 ```sh
-pip install -r requirements.txt
+pip install .
 ```
 
 ### Run the App
@@ -118,17 +141,17 @@ pip install -r requirements.txt
 
 ### Youtube OAuth (Only for private playlists)
 
-Run the following command to login to your Youtube account and save the credentials to `oauth.json`
+Run the following command to login to your Youtube account and save the credentials to `ytmusicapi-oauth.json`
 ```sh
-ytmusicapi oauth
+ytmusicapi-oauth
 ```
 
 ## Usage
 
 ```sh
 $ source .env
-$ python ytm2spt.py -h
-usage: main.py [-h] -yt YOUTUBE_URL_OR_ID
+$ ytm2spt -h
+usage: ytm2spt [-h] -yt YOUTUBE_URL_OR_ID
                [-sp SPOTIFY_URL_OR_ID | -spname SPOTIFY_PLAYLIST_NAME]
                [-ytauth YOUTUBE_OAUTH_JSON]
                [-n | -d] [-l LIMIT]
@@ -142,11 +165,23 @@ options:
   -spname SPOTIFY_PLAYLIST_NAME, --spotify-playlist-name SPOTIFY_PLAYLIST_NAME
                         Spotify Playlist Name (Default: Youtube Playlist Name)
   -ytauth YOUTUBE_OAUTH_JSON, --youtube-oauth-json YOUTUBE_OAUTH_JSON
-                        Youtube OAuth JSON filepath (run 'ytmusicapi oauth')
+                        Youtube OAuth JSON filepath (run 'ytmusicapi-oauth')
   -n, --create-new      Force create a new playlist
   -d, --dryrun          Do not add to Spotify
   -l LIMIT, --limit LIMIT
                         Limit the number of songs to fetch
+```
+
+```sh
+$ ytmusicapi-oauth -h
+usage: ytmusicapi-oauth [-h] [-b] [file]
+
+positional arguments:
+  file                file path to store the json (Default: ytmusic-oauth.json)
+
+options:
+  -h, --help          show this help message and exit
+  -b, --open-browser  open browser for OAuth login (Default: True)
 ```
 
 ### Examples

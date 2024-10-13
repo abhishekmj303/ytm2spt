@@ -33,7 +33,7 @@ def get_args():
         type=str,
         default=None,
         required=False,
-        help="Youtube OAuth JSON filepath (run 'ytmusicapi oauth')"
+        help="Youtube OAuth JSON filepath (run 'ytmusicapi-oauth')"
     )
     run_group = parser.add_mutually_exclusive_group(required=False)
     run_group.add_argument(
@@ -92,7 +92,7 @@ def oauth():
         nargs="?",
         type=str,
         default="ytmusicapi-oauth.json",
-        help="file path to store the json (Default: ytmusic-oauth.json)",
+        help="file path to store the json (Default: ytmusicapi-oauth.json)",
     )
 
     args = parser.parse_args()
