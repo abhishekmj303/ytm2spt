@@ -1,6 +1,6 @@
 [project]
 name = "ytm2spt"
-version = "1.1.0"
+version = "1.1.1"
 authors = [
   { name="Abhishek M J", email="abhishekmj303@gmail.com" },
 ]
@@ -25,7 +25,7 @@ dependencies = [
     "pyside6>=6.8.0",
     "spotipy>=2.24.0",
     "thefuzz>=0.22.1",
-    "ytmusicapi==1.8.2",
+    "ytmusicapi==1.10.1",
 ]
 
 [tool.uv]

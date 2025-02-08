@@ -328,7 +328,7 @@ wheels = [
 
 [[package]]
 name = "ytm2spt"
-version = "1.1.0"
+version = "1.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "pyside6" },
@@ -347,7 +347,7 @@ requires-dist = [
     { name = "pyside6", specifier = ">=6.8.0" },
     { name = "spotipy", specifier = ">=2.24.0" },
     { name = "thefuzz", specifier = ">=0.22.1" },
-    { name = "ytmusicapi", specifier = "==1.8.2" },
+    { name = "ytmusicapi", specifier = "==1.10.1" },
 ]
 
 [package.metadata.requires-dev]
@@ -355,14 +355,14 @@ dev = [{ name = "nuitka", specifier = ">=2.4.8" }]
 
 [[package]]
 name = "ytmusicapi"
-version = "1.8.2"
+version = "1.10.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/28/d2/c94548a3c29cf24a2e5c85cd95e86b1808803882b7835c37bfeab1ea9530/ytmusicapi-1.8.2.tar.gz", hash = "sha256:454facdf5907c32b77cb035f54c76d5a9d3fb0316933b1a1cecd06110ff85ecf", size = 284079 }
+sdist = { url = "https://files.pythonhosted.org/packages/32/c2/d71381bb0b8ddc55fc51a26c8ddaadc4f3b202fcde85e0a190d0583d3b8a/ytmusicapi-1.10.1.tar.gz", hash = "sha256:812685451916e76bf47b96f61ef5d4f4db408ea154a44d0779757539f62d69f9", size = 311622 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7e/eb/23417507ba393545e98ba7c6d01e136cb3b9426d496a5eb216de7dc79adb/ytmusicapi-1.8.2-py3-none-any.whl", hash = "sha256:579dd60704fc2538eb94e2035fb36e904a713f948506ca3d28d151c61c782a86", size = 87759 },
+    { url = "https://files.pythonhosted.org/packages/a0/02/203e3ebdd4061ae8a72c0e0266ebadfc136717c0e79a8cdb168ad15dcda4/ytmusicapi-1.10.1-py3-none-any.whl", hash = "sha256:585a54c372e035c0b8f0211d36335549c59279f22684109c67bbe997fe345706", size = 93218 },
 ]
 
 [[package]]
