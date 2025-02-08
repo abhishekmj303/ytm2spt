@@ -40,12 +40,12 @@ By setting up a Developer account and creating your own credentials (like keys),
 
 1. Create a new app: https://developer.spotify.com/dashboard
 2. Set "Redirect URI" to `http://localhost:8888/callback`
-   ![Spotify create new app](media/spotify_create_app.png)
+   ![Spotify create new app](https://raw.githubusercontent.com/abhishekmj303/ytm2spt/refs/heads/main/media/spotify_create_app.png)
 3. Copy the "Client ID" and "Client Secret" to use later
-   ![Spotify settings](media/spotify_settings.png)
-   ![Spotify credentials](media/spotify_credentials.png)
+   ![Spotify settings](https://raw.githubusercontent.com/abhishekmj303/ytm2spt/refs/heads/main/media/spotify_settings.png)
+   ![Spotify credentials](https://raw.githubusercontent.com/abhishekmj303/ytm2spt/refs/heads/main/media/spotify_credentials.png)
 4. Copy the "User ID" from your Spotify account: https://www.spotify.com/in-en/account/profile/
-   ![Spotify username](media/spotify_username.png)
+   ![Spotify username](https://raw.githubusercontent.com/abhishekmj303/ytm2spt/refs/heads/main/media/spotify_username.png)
 
 
 ## Installation
@@ -75,6 +75,9 @@ pip install ytm2spt
 ```
 
 After installation, you can run the app using the command `ytm2spt`.
+
+> [!CAUTION]<br>
+> While syncing into an existing spotify playlist, first all the songs from Stopify playlist will be deleted and then the all the songs from YouTube Music playlist will be copied.
 
 
 ### Spotify Settings
