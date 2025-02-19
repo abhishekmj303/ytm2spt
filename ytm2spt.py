@@ -7,9 +7,6 @@
 #    nuitka-project: --onefile
 # nuitka-project-if: {OS} == "Windows":
 #    nuitka-project: --standalone
-# nuitka-project-if: {OS} == "Darwin":
-#    nuitka-project: --standalone
-#    nuitka-project: --macos-create-app-bundle
 #
 # Debugging options, controlled via environment variable at compile time.
 # nuitka-project-if: os.getenv("DEBUG_COMPILATION", "yes") == "yes":
