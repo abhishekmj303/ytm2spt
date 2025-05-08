@@ -50,7 +50,16 @@ By setting up a Developer account and creating your own credentials (like keys),
 
 ## Installation
 
-Download the latest version from the [releases page](https://github.com/abhishekmj303/ytm2spt/releases/latest).
+Download the latest version from the following links:
+
+<table>
+  <tr>
+    <td><a href="https://github.com/abhishekmj303/ytm2spt/releases/latest/download/ytm2spt-linux.tar.gz"><img src="https://img.shields.io/badge/Linux-363a4f?style=for-the-badge&logo=linux&logoColor=white" alt="Linux"></a></td>
+    <td><a href="https://github.com/abhishekmj303/ytm2spt/releases/latest/download/ytm2spt-windows.zip"><img src="https://img.shields.io/badge/Windows-363a4f?style=for-the-badge&logo=windows&logoColor=white" alt="Windows"></a></td>
+    <td><a href="https://github.com/abhishekmj303/ytm2spt/releases/latest/download/ytm2spt-macos.zip"><img src="https://img.shields.io/badge/Mac OS-363a4f?style=for-the-badge&logo=apple&logoColor=white" alt="MacOS"></a></td>
+  </tr>
+</table>
+
 
 > [!NOTE]<br>
 > **Windows**: Windows Defender may interrupt the app from running. Click on more info and allow the program to run.
