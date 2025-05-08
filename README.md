@@ -39,7 +39,7 @@
 By setting up a Developer account and creating your own credentials (like keys), you are ensuring that the app connects to your account in a safe way without sharing your login details with anyone. It gives you full control over what the app can access and helps keep your Spotify account secure.
 
 1. Create a new app: https://developer.spotify.com/dashboard
-2. Set "Redirect URI" to `http://localhost:8888/callback`
+2. Set "Redirect URI" to `http://127.0.0.1:8888/callback`
    ![Spotify create new app](https://raw.githubusercontent.com/abhishekmj303/ytm2spt/refs/heads/main/media/spotify_create_app.png)
 3. Copy the "Client ID" and "Client Secret" to use later
    ![Spotify settings](https://raw.githubusercontent.com/abhishekmj303/ytm2spt/refs/heads/main/media/spotify_settings.png)
