@@ -358,7 +358,7 @@ class RunCommandWorker(QThread):
         except Exception as e:
             print(e)
             print(traceback.format_exc())
-            self.error.emit(str(e))
+            self.completed.emit()
 
 
 def main():
