@@ -11,8 +11,7 @@ from datetime import datetime
 
 def generate_description() -> str:
     isodate = datetime.now().strftime("%b %d, %Y") # example: Jun 30, 2021
-    github = "github.com/abhishekmj303/ytm2spt"
-    description = f"Youtube Playlist Imported on {isodate} by {github}"
+    description = f"Youtube Playlist Imported on {isodate} by HimalThapaMagar"
     return description
 
 
@@ -63,25 +62,51 @@ class Spotify:
         self.spotify_logger.debug(f"Got Playlist Name: {playlist_name}")
         return playlist_name
     
-    def get_playlist_items(self, playlist_id: str = "", limit: int = 100) -> 'dict':
+    def get_playlist_items(self, playlist_id: str = "") -> 'list':
+        """Get all tracks from a playlist using pagination to handle Spotify's 100 track limit"""
         if not playlist_id:
             playlist_id = self.playlist_id
-        result = self.spotify.playlist_tracks(playlist_id, limit=limit)["items"]
-        track_ids = [t["track"]["id"] for t in result]
-        self.spotify_logger.debug(f"Got Playlist Items: {track_ids}")
-        return track_ids
+            
+        results = []
+        offset = 0
+        limit = 100  # Spotify's maximum allowed limit
+        
+        try:
+            while True:
+                response = self.spotify.playlist_tracks(playlist_id, limit=limit, offset=offset)
+                items = response["items"]
+                if not items:
+                    break
+                results.extend(items)
+                offset += limit
+                # Break if we've received fewer items than requested (end of playlist)
+                if len(items) < limit:
+                    break
+                
+            track_ids = [t["track"]["id"] for t in results if t.get("track")]
+            self.spotify_logger.debug(f"Got Playlist Items: {track_ids}")
+            return results
+        except Exception as e:
+            self.spotify_logger.error(f"Error fetching playlist tracks: {e}")
+            return []
     
     def empty_playlist(self, playlist_id: str = "") -> None:
+        """Empty a playlist by removing all tracks"""
         if not playlist_id:
             playlist_id = self.playlist_id
+        
         tracks = self.get_playlist_items(playlist_id)
-        track_ids = [id for id in tracks]
-
-        if not track_ids:
+        if not tracks:
             self.spotify_logger.debug(f"Playlist {playlist_id} is already empty")
             return
-
-        self.spotify.playlist_remove_all_occurrences_of_items(playlist_id, track_ids)
+        
+        track_uris = [item["track"]["uri"] for item in tracks if item.get("track")]
+        
+        # Spotify can only remove 100 tracks at a time, so we need to chunk them
+        for i in range(0, len(track_uris), 100):
+            chunk = track_uris[i:i+100]
+            self.spotify.playlist_remove_all_occurrences_of_items(playlist_id, chunk)
+            
         self.spotify_logger.debug(f"Emptied Playlist {playlist_id}")
 
     def get_song_uri(self, artist: str, song_name: str) -> Union['str', None]:
