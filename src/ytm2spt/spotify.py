@@ -26,7 +26,7 @@ class Spotify:
             client_id=os.environ['SPOTIFY_CLIENT_ID'],
             client_secret=os.environ['SPOTIFY_CLIENT_SECRET'],
             redirect_uri=os.environ['SPOTIFY_REDIRECT_URI'],
-            scope='playlist-read-collaborative playlist-modify-private playlist-modify-public playlist-read-private ugc-image-upload',
+            scope='playlist-read-collaborative playlist-modify-private playlist-modify-public playlist-read-private ugc-image-upload user-library-modify',
             open_browser=open_browser,
             cache_path=".spotipy_cache",
         ))
@@ -116,8 +116,17 @@ class Spotify:
         except SpotifyException as e:
             self.spotify_logger.error(f"Error adding song to playlist: {e}")
             return False
+
+    def add_song_to_liked(self, song_uri: str) -> bool:
+        try:
+            self.spotify.current_user_saved_tracks_add([song_uri])
+            self.spotify_logger.debug(f"Added Song {song_uri} to Liked Songs")
+            return True
+        except SpotifyException as e:
+            self.spotify_logger.error(f"Error adding song to liked songs: {e}")
+            return False
     
-    def set_playlist_cover(self, encoded_img: str, playlist_id: str = "") -> bool:
+    def set_playlist_cover(self, encoded_img: bytes, playlist_id: str = "") -> bool:
         if not playlist_id:
             playlist_id = self.playlist_id
         try:

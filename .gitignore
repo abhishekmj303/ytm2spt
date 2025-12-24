@@ -19,3 +19,6 @@ ytmusicapi-oauth.json
 venv
 dist
 build
+
+browser.json
+oauth.json

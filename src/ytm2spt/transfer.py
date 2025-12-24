@@ -21,6 +21,8 @@ def url_to_id(url: str, site: str) -> str:
         else:
             raise ValueError("Not a valid Spotify Playlist URL")
 
+    raise ValueError(f"Unsupported site: {site}")
+
 
 def get_youtube_playlist_id(youtube_arg: str) -> str:
     for site in ["youtube.com", "youtu.be"]:
@@ -48,6 +50,8 @@ def get_spotify_playlist_id(spotify_arg: str, spotify_playlist_name: str, create
         if not dryrun:
             return sp.create_playlist(yt.get_playlist_title())
 
+    return ""
+
 
 def set_yt_thumbnail_as_sp_cover(dryrun: bool = False):
     thumbnail_url = yt.get_playlist_thumbnail()
@@ -63,45 +67,58 @@ def set_yt_thumbnail_as_sp_cover(dryrun: bool = False):
         sp.set_playlist_cover(encoded_img)
 
 
-def transfer_playlist(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dryrun, create_new, limit):
+def transfer_playlist(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, youtube_client_id, youtube_client_secret, dryrun, create_new, limit):
     global yt, sp
-    yt = YoutubeMusic(youtube_oauth)
+    yt = YoutubeMusic(youtube_oauth, youtube_client_id, youtube_client_secret)
     sp = Spotify()
     ytm2spt_logger = setup_logger(__name__)
 
-    youtube_id = get_youtube_playlist_id(youtube_arg)
-    ytm2spt_logger.info(f"Youtube Playlist ID: {youtube_id}")
-    yt.set_playlist_id(youtube_id)
-    ytm2spt_logger.info(f"Youtube Playlist Name: {yt.get_playlist_title()}")
+    is_youtube_liked = isinstance(youtube_arg, str) and youtube_arg.lower() == "lm"
+
+    if is_youtube_liked:
+        yt.set_liked_songs()
+        ytm2spt_logger.info(f"Youtube Liked Songs loaded")
+    else:
+        youtube_id = get_youtube_playlist_id(youtube_arg)
+        ytm2spt_logger.info(f"Youtube Playlist ID: {youtube_id}")
+        yt.set_playlist_id(youtube_id)
+        ytm2spt_logger.info(f"Youtube Playlist Name: {yt.get_playlist_title()}")
     
     if dryrun:
         ytm2spt_logger.info("Dryrun mode enabled. No songs will be added to Spotify.")
-        set_yt_thumbnail_as_sp_cover(dryrun=True)
-        ytm2spt_logger.info("Get playlist cover from youtube thumbnail")
+        if not is_youtube_liked:
+            set_yt_thumbnail_as_sp_cover(dryrun=True)
+            ytm2spt_logger.info("Get playlist cover from youtube thumbnail")
     else:
-        if not (spotify_arg or spotify_playlist_name):
-            spotify_playlist_name = yt.get_playlist_title()
-        spotify_id = get_spotify_playlist_id(spotify_arg, spotify_playlist_name, create_new, dryrun)
-        ytm2spt_logger.info(f"Spotify Playlist ID: {spotify_id}")
-        sp.set_playlist_id(spotify_id)
-        ytm2spt_logger.info(f"Spotify Playlist Name: {sp.get_playlist_name()}")
+        if is_youtube_liked:
+            ytm2spt_logger.info("Targeting Spotify Liked Songs")
+        else:
+            if not (spotify_arg or spotify_playlist_name):
+                spotify_playlist_name = yt.get_playlist_title()
+            spotify_id = get_spotify_playlist_id(spotify_arg, spotify_playlist_name, create_new, dryrun)
+            ytm2spt_logger.info(f"Spotify Playlist ID: {spotify_id}")
+            sp.set_playlist_id(spotify_id)
+            ytm2spt_logger.info(f"Spotify Playlist Name: {sp.get_playlist_name()}")
 
-        try:
-            set_yt_thumbnail_as_sp_cover()
-            ytm2spt_logger.info("Set playlist cover from youtube thumbnail")
-        except Exception as e:
-            ytm2spt_logger.warning(str(e))
-            ytm2spt_logger.warning("Could not able to set playlist cover from youtube thumbnail")
+            try:
+                set_yt_thumbnail_as_sp_cover()
+                ytm2spt_logger.info("Set playlist cover from youtube thumbnail")
+            except Exception as e:
+                ytm2spt_logger.warning(str(e))
+                ytm2spt_logger.warning("Could not able to set playlist cover from youtube thumbnail")
 
-        if not create_new:
-            sp.set_playlist_description()
-            ytm2spt_logger.info("Update playlist description")
+            if not create_new:
+                sp.set_playlist_description()
+                ytm2spt_logger.info("Update playlist description")
 
-            sp.empty_playlist()
-            ytm2spt_logger.info("Empty the current playlist")
-
+                sp.empty_playlist()
+                ytm2spt_logger.info("Empty the current playlist")
+    
     songs = yt.get_songs_from_playlist(limit)
-    ytm2spt_logger.info(f"Got {len(songs)} songs from Youtube Playlist")
+    if is_youtube_liked:
+        ytm2spt_logger.info(f"Got {len(songs)} songs from Youtube Liked Songs")
+    else:
+        ytm2spt_logger.info(f"Got {len(songs)} songs from Youtube Playlist")
     
     total_songs_added = 0
     total_songs_found = 0
@@ -120,7 +137,10 @@ def transfer_playlist(youtube_arg, spotify_arg, spotify_playlist_name, youtube_o
         if dryrun:
             continue
         
-        was_added = sp.add_song_to_playlist(song_uri)
+        if is_youtube_liked:
+            was_added = sp.add_song_to_liked(song_uri)
+        else:
+            was_added = sp.add_song_to_playlist(song_uri)
 
         if was_added:
             ytm2spt_logger.info(

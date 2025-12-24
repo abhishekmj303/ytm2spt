@@ -11,8 +11,16 @@ from ytmusicapi import setup_oauth
 
 from .transfer import transfer_playlist
 
-SETTINGS = QSettings(QSettings.IniFormat, QSettings.UserScope, "ytm2spt", "config")
-YTOAUTH_PATH = os.path.join(os.path.dirname(SETTINGS.fileName()), "oauth.json")
+SETTINGS = QSettings(QSettings.Format.IniFormat, QSettings.Scope.UserScope, "ytm2spt", "config")
+DEFAULT_YTOAUTH_PATH = os.path.join(os.path.dirname(SETTINGS.fileName()), "oauth.json")
+
+
+def get_ytoauth_path() -> str:
+    return str(SETTINGS.value("YT_OAUTH_PATH", defaultValue=DEFAULT_YTOAUTH_PATH) or DEFAULT_YTOAUTH_PATH)
+
+
+def get_setting_str(key: str, default: str = "") -> str:
+    return str(SETTINGS.value(key, defaultValue=default) or default)
 
 
 def init_settings():
@@ -25,6 +33,12 @@ def init_settings():
         SETTINGS.setValue("SPOTIFY_CLIENT_SECRET", "")
     if "SPOTIFY_REDIRECT_URI" not in keys:
         SETTINGS.setValue("SPOTIFY_REDIRECT_URI", "http://localhost:8888/callback")
+    if "YT_CLIENT_ID" not in keys:
+        SETTINGS.setValue("YT_CLIENT_ID", "")
+    if "YT_CLIENT_SECRET" not in keys:
+        SETTINGS.setValue("YT_CLIENT_SECRET", "")
+    if "YT_OAUTH_PATH" not in keys:
+        SETTINGS.setValue("YT_OAUTH_PATH", DEFAULT_YTOAUTH_PATH)
 
     SETTINGS.sync()
     
@@ -60,20 +74,20 @@ class SpotifySettingsDialog(QDialog):
         layout.addRow(info_label)
 
         self.user_id_input = QLineEdit()
-        self.user_id_input.setText(SETTINGS.value("SPOTIFY_USER_ID", defaultValue=""))
+        self.user_id_input.setText(get_setting_str("SPOTIFY_USER_ID"))
         # self.user_id_input.setPlaceholderText("This is not email")
         layout.addRow("User ID", self.user_id_input)
 
         self.client_id_input = QLineEdit()
-        self.client_id_input.setText(SETTINGS.value("SPOTIFY_CLIENT_ID", defaultValue=""))
+        self.client_id_input.setText(get_setting_str("SPOTIFY_CLIENT_ID"))
         layout.addRow("Client ID", self.client_id_input)
 
         self.client_secret_input = QLineEdit()
-        self.client_secret_input.setText(SETTINGS.value("SPOTIFY_CLIENT_SECRET", defaultValue=""))
+        self.client_secret_input.setText(get_setting_str("SPOTIFY_CLIENT_SECRET"))
         layout.addRow("Client Secret", self.client_secret_input)
 
         self.redirect_uri_input = QLineEdit()
-        self.redirect_uri_input.setText(SETTINGS.value("SPOTIFY_REDIRECT_URI", defaultValue=""))
+        self.redirect_uri_input.setText(get_setting_str("SPOTIFY_REDIRECT_URI"))
         layout.addRow("Redirect URI", self.redirect_uri_input)
 
         self.save_button = QPushButton("Save")
@@ -91,6 +105,9 @@ class SpotifySettingsDialog(QDialog):
         SETTINGS.sync()
         self.close()
 
+    def closeEvent(self, event):
+        super().closeEvent(event)
+
 
 class YouTubeSettingsDialog(QDialog):
     def __init__(self, parent=None):
@@ -107,18 +124,49 @@ class YouTubeSettingsDialog(QDialog):
         self.oauth_button.clicked.connect(self.get_oauth_token)
         layout.addWidget(self.oauth_button)
 
+        form_layout = QFormLayout()
+        self.yt_oauth_path_input = QLineEdit()
+        self.yt_oauth_path_input.setText(get_ytoauth_path())
+        form_layout.addRow("JSON File Path", self.yt_oauth_path_input)
+        self.yt_client_id_input = QLineEdit()
+        self.yt_client_id_input.setText(get_setting_str("YT_CLIENT_ID"))
+        form_layout.addRow("Client ID", self.yt_client_id_input)
+        self.yt_client_secret_input = QLineEdit()
+        self.yt_client_secret_input.setText(get_setting_str("YT_CLIENT_SECRET"))
+        form_layout.addRow("Client Secret", self.yt_client_secret_input)
+        layout.addLayout(form_layout)
+
         self.message_label = QLabel("No OAuth token found")
         self.message_label.setWordWrap(True)
-        self.message_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        if os.path.exists(YTOAUTH_PATH):
-            self.message_label.setText("OAuth token saved at " + YTOAUTH_PATH)
+        self.message_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        current_oauth_path = get_ytoauth_path()
+        if os.path.exists(current_oauth_path):
+            self.message_label.setText("OAuth token saved at " + current_oauth_path)
         layout.addWidget(self.message_label)
 
     def get_oauth_token(self):
-        setup_oauth(filepath=YTOAUTH_PATH, open_browser=True)
-        self.message_label.setText("OAuth token saved at " + YTOAUTH_PATH)
+        ytoauth_path = self.yt_oauth_path_input.text().strip() or DEFAULT_YTOAUTH_PATH
+        SETTINGS.setValue("YT_CLIENT_ID", self.yt_client_id_input.text())
+        SETTINGS.setValue("YT_CLIENT_SECRET", self.yt_client_secret_input.text())
+        SETTINGS.setValue("YT_OAUTH_PATH", ytoauth_path)
+        SETTINGS.sync()
+        setup_oauth(
+            client_id=self.yt_client_id_input.text(),
+            client_secret=self.yt_client_secret_input.text(),
+            filepath=ytoauth_path,
+            open_browser=True
+        )
+        self.message_label.setText("OAuth token saved at " + ytoauth_path)
         # Qt sleep 3 seconds
         QtCore.QTimer.singleShot(3000, self.close)
+
+    def closeEvent(self, event):
+        ytoauth_path = self.yt_oauth_path_input.text().strip() or DEFAULT_YTOAUTH_PATH
+        SETTINGS.setValue("YT_CLIENT_ID", self.yt_client_id_input.text())
+        SETTINGS.setValue("YT_CLIENT_SECRET", self.yt_client_secret_input.text())
+        SETTINGS.setValue("YT_OAUTH_PATH", ytoauth_path)
+        SETTINGS.sync()
+        super().closeEvent(event)
 
 
 class MainWindow(QMainWindow):
@@ -149,8 +197,14 @@ class MainWindow(QMainWindow):
         yt_layout = QVBoxLayout(yt_group)
         yt_layout.addWidget(QLabel("Playlist URL or ID"))
         self.yt_input = QLineEdit()
+        self.prev_yt_value = ""
+        self.prev_yt_private_checked = False
         self.yt_input.textChanged.connect(self.update_command)
         yt_layout.addWidget(self.yt_input)
+
+        self.yt_liked_checkbox = QCheckBox("Use Liked Songs (LM)")
+        self.yt_liked_checkbox.toggled.connect(self.yt_liked_toggled)
+        yt_layout.addWidget(self.yt_liked_checkbox)
 
         self.yt_private_checkbox = QCheckBox("Private Playlist")
         self.yt_private_checkbox.stateChanged.connect(self.yt_private_toggled)
@@ -265,7 +319,7 @@ class MainWindow(QMainWindow):
                 command += " -n"
         
         if self.yt_private_checkbox.isChecked():
-            command += f' -ytauth "{YTOAUTH_PATH}"'
+            command += f' -ytauth "{get_ytoauth_path()}"'
         
         if self.other_group.isChecked():
             if self.dryrun_checkbox.isChecked():
@@ -297,13 +351,15 @@ class MainWindow(QMainWindow):
             spotify_arg = None
             spotify_playlist_name = self.spname_input.text().strip()
         
-        youtube_oauth = YTOAUTH_PATH if self.yt_private_checkbox.isChecked() else None
+        youtube_oauth = get_ytoauth_path() if self.yt_private_checkbox.isChecked() else None
+        youtube_client_id = SETTINGS.value("YT_CLIENT_ID") if self.yt_private_checkbox.isChecked() else None
+        youtube_client_secret = SETTINGS.value("YT_CLIENT_SECRET") if self.yt_private_checkbox.isChecked() else None
         dry_run = self.dryrun_checkbox.isChecked()
         create_new = self.create_new_checkbox.isChecked()
         limit = self.limit_input.value() if self.limit_input.value() > 0 else None
 
         # Run ytm2spt
-        self.worker = RunCommandWorker(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dry_run, create_new, limit)
+        self.worker = RunCommandWorker(youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, youtube_client_id, youtube_client_secret, dry_run, create_new, limit)
         self.worker.completed.connect(self.run_finished)
         self.worker.error.connect(self.run_error)
         self.worker.start()
@@ -329,20 +385,37 @@ class MainWindow(QMainWindow):
     def yt_private_toggled(self):
         self.update_command()
         if self.yt_private_checkbox.isChecked():
-            if not os.path.exists(YTOAUTH_PATH):
+            if not os.path.exists(get_ytoauth_path()):
                 self.open_youtube_settings()
+
+    def yt_liked_toggled(self, checked: bool):
+        if checked:
+            self.prev_yt_value = self.yt_input.text()
+            self.prev_yt_private_checked = self.yt_private_checkbox.isChecked()
+            self.yt_input.setText("LM")
+            self.yt_input.setEnabled(False)
+            self.yt_private_checkbox.setChecked(True)
+            self.yt_private_checkbox.setEnabled(False)
+        else:
+            self.yt_input.setEnabled(True)
+            self.yt_input.setText(self.prev_yt_value)
+            self.yt_private_checkbox.setEnabled(True)
+            self.yt_private_checkbox.setChecked(self.prev_yt_private_checked)
+        self.update_command()
 
 
 class RunCommandWorker(QThread):
     completed = Signal()
     error = Signal(str)
 
-    def __init__(self, youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, dry_run, create_new, limit):
+    def __init__(self, youtube_arg, spotify_arg, spotify_playlist_name, youtube_oauth, youtube_client_id, youtube_client_secret, dry_run, create_new, limit):
         super().__init__()
         self.youtube_arg = youtube_arg
         self.spotify_arg = spotify_arg
         self.spotify_playlist_name = spotify_playlist_name
         self.youtube_oauth = youtube_oauth
+        self.youtube_client_id = youtube_client_id
+        self.youtube_client_secret = youtube_client_secret
         self.dry_run = dry_run
         self.create_new = create_new
         self.limit = limit
@@ -353,7 +426,7 @@ class RunCommandWorker(QThread):
             os.environ["SPOTIFY_CLIENT_ID"] = SETTINGS.value("SPOTIFY_CLIENT_ID")
             os.environ["SPOTIFY_CLIENT_SECRET"] = SETTINGS.value("SPOTIFY_CLIENT_SECRET")
             os.environ["SPOTIFY_REDIRECT_URI"] = SETTINGS.value("SPOTIFY_REDIRECT_URI")
-            transfer_playlist(self.youtube_arg, self.spotify_arg, self.spotify_playlist_name, self.youtube_oauth, self.dry_run, self.create_new, self.limit)
+            transfer_playlist(self.youtube_arg, self.spotify_arg, self.spotify_playlist_name, self.youtube_oauth, self.youtube_client_id, self.youtube_client_secret, self.dry_run, self.create_new, self.limit)
             self.completed.emit()
         except Exception as e:
             print(e)

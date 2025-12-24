@@ -97,10 +97,33 @@ When you run the executable, you will be prompted to enter your Spotify credenti
 
 ### Youtube Settings
 
-If you click on "Private Playlist", you will be prompted to enter get your Youtube OAuth credentials if not already set.
+To access private playlists, you need to log in to YouTube. You can use either Browser authentication or OAuth authentication. Please choose one method to log in.
 
-![Youtube Settings](media/youtube_ui.png)
+#### Browser authentication
 
+1. Refer to [Browser authentication](https://ytmusicapi.readthedocs.io/en/stable/setup/browser.html) to create a `browser.json` file.
+
+2. Enter the path to the generated `browser.json` file in the **JSON File Path** field. 
+
+3. **Client ID** and **Client Secret** must be left empty.  
+![Youtube Settings](media/youtube_browser.png)
+
+4. Close the dialog.
+
+#### OAuth authentication
+
+**Warning!** OAuth authentication is currently unavailable due to an [issue](https://github.com/sigma67/ytmusicapi/issues/813) with the ytmusicapi library!
+
+1. Refer to the [YouTube Data API docs](https://developers.google.com/youtube/registering_an_application) and select `TVs and Limited Input devices` to create an `OAuth client ID`. You will need to obtain a `client_id` and `client_secret`.
+
+2. Enter the generated `client_id` and `client_secret`.  
+![Youtube Settings](media/youtube_oauth.png)
+
+3. Click the `Get OAuth Token` button. The YouTube OAuth token will be saved to the path specified in `JSON File Path`.
+
+4. When the authentication is completed close the dialog.
+
+[reference](https://ytmusicapi.readthedocs.io/en/stable/setup/oauth.html)
 
 > [!TIP]<br>
 > If you find this project useful or interesting, please consider giving it a 🌟star! It helps others discover it too!

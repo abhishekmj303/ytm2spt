@@ -9,7 +9,7 @@ def get_args():
         type=str,
         default=None,
         required=True,
-        help="Youtube Playlist URL or ID",
+        help="Youtube Playlist URL or ID (use 'LM' to import liked songs)",
     )
     sp_group = parser.add_mutually_exclusive_group(required=False)
     sp_group.add_argument(
