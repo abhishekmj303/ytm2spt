@@ -17,8 +17,6 @@ YTOAUTH_PATH = os.path.join(os.path.dirname(SETTINGS.fileName()), "oauth.json")
 
 def init_settings():
     keys = SETTINGS.allKeys()
-    if "SPOTIFY_USER_ID" not in keys:
-        SETTINGS.setValue("SPOTIFY_USER_ID", "")
     if "SPOTIFY_CLIENT_ID" not in keys:
         SETTINGS.setValue("SPOTIFY_CLIENT_ID", "")
     if "SPOTIFY_CLIENT_SECRET" not in keys:
@@ -39,8 +37,7 @@ def init_settings():
 
 
 def is_valid_settings():
-    return SETTINGS.value("SPOTIFY_USER_ID") != "" \
-    and SETTINGS.value("SPOTIFY_CLIENT_ID") != "" \
+    return SETTINGS.value("SPOTIFY_CLIENT_ID") != "" \
     and SETTINGS.value("SPOTIFY_CLIENT_SECRET") != "" \
     and SETTINGS.value("SPOTIFY_REDIRECT_URI") != ""
 
@@ -59,11 +56,6 @@ class SpotifySettingsDialog(QDialog):
         info_label.setOpenExternalLinks(True)
         layout.addRow(info_label)
 
-        self.user_id_input = QLineEdit()
-        self.user_id_input.setText(SETTINGS.value("SPOTIFY_USER_ID", defaultValue=""))
-        # self.user_id_input.setPlaceholderText("This is not email")
-        layout.addRow("User ID", self.user_id_input)
-
         self.client_id_input = QLineEdit()
         self.client_id_input.setText(SETTINGS.value("SPOTIFY_CLIENT_ID", defaultValue=""))
         layout.addRow("Client ID", self.client_id_input)
@@ -81,7 +73,6 @@ class SpotifySettingsDialog(QDialog):
         layout.addRow(self.save_button)
 
     def save_settings(self):
-        SETTINGS.setValue("SPOTIFY_USER_ID", self.user_id_input.text())
         SETTINGS.setValue("SPOTIFY_CLIENT_ID", self.client_id_input.text())
         SETTINGS.setValue("SPOTIFY_CLIENT_SECRET", self.client_secret_input.text())
         SETTINGS.setValue("SPOTIFY_REDIRECT_URI", self.redirect_uri_input.text())
@@ -349,7 +340,6 @@ class RunCommandWorker(QThread):
     
     def run(self):
         try:
-            os.environ["SPOTIFY_USER_ID"] = SETTINGS.value("SPOTIFY_USER_ID")
             os.environ["SPOTIFY_CLIENT_ID"] = SETTINGS.value("SPOTIFY_CLIENT_ID")
             os.environ["SPOTIFY_CLIENT_SECRET"] = SETTINGS.value("SPOTIFY_CLIENT_SECRET")
             os.environ["SPOTIFY_REDIRECT_URI"] = SETTINGS.value("SPOTIFY_REDIRECT_URI")

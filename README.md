@@ -44,8 +44,6 @@ By setting up a Developer account and creating your own credentials (like keys),
 3. Copy the "Client ID" and "Client Secret" to use later
    ![Spotify settings](https://raw.githubusercontent.com/abhishekmj303/ytm2spt/refs/heads/main/media/spotify_settings.png)
    ![Spotify credentials](https://raw.githubusercontent.com/abhishekmj303/ytm2spt/refs/heads/main/media/spotify_credentials.png)
-4. Copy the "User ID" from your Spotify account: https://www.spotify.com/in-en/account/profile/
-   ![Spotify username](https://raw.githubusercontent.com/abhishekmj303/ytm2spt/refs/heads/main/media/spotify_username.png)
 
 
 ## Installation
@@ -134,7 +132,6 @@ python ytm2spt.py
 
 1. Edit `env.bat` file by adding your credentials in these lines
    ```bat
-   set SPOTIFY_USER_ID=<your_user_id>
    set SPOTIFY_CLIENT_ID=<your_client_id>
    set SPOTIFY_CLIENT_SECRET=<your_client_secret>
    ```

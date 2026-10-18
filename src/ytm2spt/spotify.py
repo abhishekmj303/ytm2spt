@@ -18,7 +18,6 @@ def generate_description() -> str:
 
 class Spotify:
     def __init__(self):
-        self.user_id = os.environ["SPOTIFY_USER_ID"]
         open_browser = True
         if platform.system() == "Linux" and not (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY")):
             open_browser = False
@@ -39,12 +38,12 @@ class Spotify:
         self.spotify_logger.debug(f"Set Playlist ID: {self.playlist_id}")
     
     def get_user_playlists(self) -> 'list':
-        playlists = self.spotify.user_playlists(self.user_id)["items"]
+        playlists = self.spotify.current_user_playlists()["items"]
         self.spotify_logger.debug(f"Got User's Playlists: {playlists}")
         return playlists
 
     def create_playlist(self, playlist_name: str, description: str = "") -> str:
-        playlist = self.spotify.user_playlist_create(self.user_id, playlist_name, description)
+        playlist = self.spotify.current_user_playlist_create(playlist_name, description=description)
         self.spotify_logger.debug(f"Created Playlist: {playlist}")
         return playlist['id']
     
